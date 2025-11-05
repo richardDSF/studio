@@ -18,6 +18,10 @@ import {
   Handshake,
   Building,
   Gavel,
+  Route,
+  BarChart,
+  School,
+  PlayCircle,
 } from "lucide-react";
 
 // Definimos los elementos de nuestro menú de navegación en un array.
@@ -27,7 +31,11 @@ const navItems = [
   { href: "/dashboard/users", icon: Users, label: "Oportunidades" },
   { href: "/dashboard/volunteers", icon: Handshake, label: "Voluntarios" },
   { href: "/dashboard/branches", icon: Building, label: "Sucursales" },
-  { href: "/dashboard/cases", icon: Gavel, label: "Casos" },
+  { href: "/dashboard/amparos", icon: Gavel, label: "Amparos" },
+  { href: "/dashboard/amparos-mep", icon: School, label: "Amparos MEP" },
+  { href: "/dashboard/ejecuciones", icon: PlayCircle, label: "Ejecuciones" },
+  { href: "/dashboard/rutas", icon: Route, label: "Rutas" },
+  { href: "/dashboard/reportes", icon: BarChart, label: "Reportes" },
 ];
 
 // Esta es la función que crea el componente de navegación del dashboard.
