@@ -1,69 +1,81 @@
+// Este archivo contiene datos de ejemplo (mock data) para la aplicación.
+// En una aplicación real, estos datos vendrían de una base de datos.
+
+// Define la estructura (el "tipo") de un objeto Usuario.
 export type User = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  status: 'New' | 'Contacted' | 'Pending' | 'Case Created';
-  registeredOn: string;
-  avatarUrl: string;
+  id: string; // Identificador único del usuario.
+  name: string; // Nombre del usuario.
+  email: string; // Correo electrónico del usuario.
+  phone: string; // Teléfono del usuario.
+  status: 'Nuevo' | 'Contactado' | 'Pendiente' | 'Caso Creado'; // El estado actual de la oportunidad.
+  registeredOn: string; // Fecha de registro.
+  avatarUrl: string; // URL de la imagen de perfil.
 };
 
+// Define la estructura de un objeto Voluntario.
 export type Volunteer = {
   id: string;
   name: string;
   email: string;
-  expertise: string;
-  availability: string;
+  expertise: string; // Área de especialización del voluntario.
+  availability: string; // Disponibilidad del voluntario.
   avatarUrl: string;
 };
 
+// Define la estructura de un objeto Sucursal.
 export type Branch = {
   id: string;
   name: string;
-  address: string;
-  manager: string;
+  address: string; // Dirección de la sucursal.
+  manager: string; // Nombre del gerente.
 };
 
+// Define la estructura de un objeto Caso.
 export type Case = {
   id: string;
-  title: string;
-  clientName: string;
-  assignedTo: string;
-  status: 'Open' | 'In Progress' | 'On Hold' | 'Closed';
-  lastUpdate: string;
-  category: 'Contenciosa' | 'No Contenciosa';
-  opportunityLifecycle: number;
+  title: string; // Título o nombre del caso.
+  clientName: string; // Nombre del cliente asociado al caso.
+  assignedTo: string; // A quién está asignado el caso.
+  status: 'Abierto' | 'En Progreso' | 'En Espera' | 'Cerrado'; // Estado actual del caso.
+  lastUpdate: string; // Fecha de la última actualización.
+  category: 'Contenciosa' | 'No Contenciosa'; // Categoría del caso.
+  opportunityLifecycle: number; // Porcentaje de progreso del ciclo de vida.
 };
 
+// Lista de usuarios de ejemplo.
 export const users: User[] = [
-  { id: 'USR001', name: 'Ana Silva', email: 'ana.silva@example.com', phone: '(11) 98765-4321', status: 'Case Created', registeredOn: '2023-10-26', avatarUrl: 'https://picsum.photos/seed/avatar1/40/40' },
-  { id: 'USR002', name: 'Bruno Costa', email: 'bruno.costa@example.com', phone: '(21) 91234-5678', status: 'Contacted', registeredOn: '2023-10-25', avatarUrl: 'https://picsum.photos/seed/avatar2/40/40' },
-  { id: 'USR003', name: 'Carla Dias', email: 'carla.dias@example.com', phone: '(31) 95555-4444', status: 'New', registeredOn: '2023-10-27', avatarUrl: 'https://picsum.photos/seed/avatar3/40/40' },
-  { id: 'USR004', name: 'Daniel Alves', email: 'daniel.alves@example.com', phone: '(41) 94321-8765', status: 'Pending', registeredOn: '2023-10-24', avatarUrl: 'https://picsum.photos/seed/avatar4/40/40' },
-  { id: 'USR005', name: 'Beatriz Lima', email: 'beatriz.lima@example.com', phone: '(51) 98877-6655', status: 'New', registeredOn: '2023-10-28', avatarUrl: 'https://picsum.photos/seed/avatar5/40/40' },
+  { id: 'USR001', name: 'Ana Silva', email: 'ana.silva@example.com', phone: '(11) 98765-4321', status: 'Caso Creado', registeredOn: '2023-10-26', avatarUrl: 'https://picsum.photos/seed/avatar1/40/40' },
+  { id: 'USR002', name: 'Bruno Costa', email: 'bruno.costa@example.com', phone: '(21) 91234-5678', status: 'Contactado', registeredOn: '2023-10-25', avatarUrl: 'https://picsum.photos/seed/avatar2/40/40' },
+  { id: 'USR003', name: 'Carla Dias', email: 'carla.dias@example.com', phone: '(31) 95555-4444', status: 'Nuevo', registeredOn: '2023-10-27', avatarUrl: 'https://picsum.photos/seed/avatar3/40/40' },
+  { id: 'USR004', name: 'Daniel Alves', email: 'daniel.alves@example.com', phone: '(41) 94321-8765', status: 'Pendiente', registeredOn: '2023-10-24', avatarUrl: 'https://picsum.photos/seed/avatar4/40/40' },
+  { id: 'USR005', name: 'Beatriz Lima', email: 'beatriz.lima@example.com', phone: '(51) 98877-6655', status: 'Nuevo', registeredOn: '2023-10-28', avatarUrl: 'https://picsum.photos/seed/avatar5/40/40' },
 ];
 
+// Lista de voluntarios de ejemplo.
 export const volunteers: Volunteer[] = [
-  { id: 'VOL001', name: 'Eduardo Martins', email: 'eduardo.m@example.com', expertise: 'Civil Law', availability: 'Weekends', avatarUrl: 'https://picsum.photos/seed/avatar6/40/40' },
-  { id: 'VOL002', name: 'Fernanda Lima', email: 'fernanda.l@example.com', expertise: 'Criminal Law', availability: 'Weekdays', avatarUrl: 'https://picsum.photos/seed/avatar7/40/40' },
-  { id: 'VOL003', name: 'Gabriel Rocha', email: 'gabriel.r@example.com', expertise: 'Family Law', availability: 'Weekends', avatarUrl: 'https://picsum.photos/seed/avatar8/40/40' },
+  { id: 'VOL001', name: 'Eduardo Martins', email: 'eduardo.m@example.com', expertise: 'Derecho Civil', availability: 'Fines de semana', avatarUrl: 'https://picsum.photos/seed/avatar6/40/40' },
+  { id: 'VOL002', name: 'Fernanda Lima', email: 'fernanda.l@example.com', expertise: 'Derecho Penal', availability: 'Días de semana', avatarUrl: 'https://picsum.photos/seed/avatar7/40/40' },
+  { id: 'VOL003', name: 'Gabriel Rocha', email: 'gabriel.r@example.com', expertise: 'Derecho de Familia', availability: 'Fines de semana', avatarUrl: 'https://picsum.photos/seed/avatar8/40/40' },
 ];
 
+// Lista de sucursales de ejemplo.
 export const branches: Branch[] = [
-    { id: 'BRH001', name: 'Central Office', address: '123 Main St, Cityville', manager: 'Ricardo Gomes' },
-    { id: 'BRH002', name: 'North Branch', address: '456 North Ave, Townburg', manager: 'Helena Souza' },
+    { id: 'BRH001', name: 'Oficina Central', address: '123 Main St, Cityville', manager: 'Ricardo Gomes' },
+    { id: 'BRH002', name: 'Sucursal Norte', address: '456 North Ave, Townburg', manager: 'Helena Souza' },
 ];
 
+// Lista de casos de ejemplo.
 export const cases: Case[] = [
-  { id: 'CAS001', title: 'Amparo Constitucional vs. State', clientName: 'Ana Silva', assignedTo: 'Eduardo Martins', status: 'In Progress', lastUpdate: '2023-11-01', category: 'Contenciosa', opportunityLifecycle: 75 },
-  { id: 'CAS002', title: 'Property Dispute Resolution', clientName: 'John Doe', assignedTo: 'Fernanda Lima', status: 'Open', lastUpdate: '2023-10-30', category: 'No Contenciosa', opportunityLifecycle: 25 },
-  { id: 'CAS003', title: 'Labor Rights Claim', clientName: 'Jane Smith', assignedTo: 'Eduardo Martins', status: 'Closed', lastUpdate: '2023-09-15', category: 'Contenciosa', opportunityLifecycle: 100 },
-  { id: 'CAS004', title: 'Divorce Proceedings', clientName: 'Bruno Costa', assignedTo: 'Gabriel Rocha', status: 'On Hold', lastUpdate: '2023-11-05', category: 'No Contenciosa', opportunityLifecycle: 50 },
+  { id: 'CAS001', title: 'Amparo Constitucional vs. Estado', clientName: 'Ana Silva', assignedTo: 'Eduardo Martins', status: 'En Progreso', lastUpdate: '2023-11-01', category: 'Contenciosa', opportunityLifecycle: 75 },
+  { id: 'CAS002', title: 'Resolución de Disputa de Propiedad', clientName: 'John Doe', assignedTo: 'Fernanda Lima', status: 'Abierto', lastUpdate: '2023-10-30', category: 'No Contenciosa', opportunityLifecycle: 25 },
+  { id: 'CAS003', title: 'Reclamo de Derechos Laborales', clientName: 'Jane Smith', assignedTo: 'Eduardo Martins', status: 'Cerrado', lastUpdate: '2023-09-15', category: 'Contenciosa', opportunityLifecycle: 100 },
+  { id: 'CAS004', title: 'Procedimiento de Divorcio', clientName: 'Bruno Costa', assignedTo: 'Gabriel Rocha', status: 'En Espera', lastUpdate: '2023-11-05', category: 'No Contenciosa', opportunityLifecycle: 50 },
 ];
 
+// Lista de notificaciones de ejemplo.
 export const notifications = [
-    { id: 1, text: 'New opportunity "Carla Dias" registered.', time: '10 min ago', read: false },
-    { id: 2, text: 'Case #CAS001 status updated to "In Progress".', time: '1 hour ago', read: false },
-    { id: 3, text: 'Volunteer "Fernanda Lima" just signed up.', time: '3 hours ago', read: true },
-    { id: 4, text: 'Document uploaded for case #CAS002.', time: '1 day ago', read: true },
+    { id: 1, text: 'Nueva oportunidad "Carla Dias" registrada.', time: 'hace 10 min', read: false },
+    { id: 2, text: 'El estado del caso #CAS001 se actualizó a "En Progreso".', time: 'hace 1 hora', read: false },
+    { id: 3, text: 'La voluntaria "Fernanda Lima" acaba de registrarse.', time: 'hace 3 horas', read: true },
+    { id: 4, text: 'Se ha subido un documento para el caso #CAS002.', time: 'hace 1 día', read: true },
 ];

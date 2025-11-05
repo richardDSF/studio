@@ -1,12 +1,17 @@
+// La directiva "use client" indica que este componente se ejecutará en el navegador del usuario.
+// Esto es necesario para usar el hook `usePathname` que necesita saber la URL actual.
 "use client";
 
+// Importamos 'Link' para la navegación y 'usePathname' para saber en qué página estamos.
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+// Importamos los componentes del menú de la barra lateral.
 import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
+// Importamos los íconos que usaremos en el menú.
 import {
   LayoutDashboard,
   Users,
@@ -15,23 +20,30 @@ import {
   Gavel,
 } from "lucide-react";
 
+// Definimos los elementos de nuestro menú de navegación en un array.
+// Cada objeto tiene la ruta (href), el ícono y la etiqueta de texto.
 const navItems = [
-  { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { href: "/dashboard/users", icon: Users, label: "Opportunities" },
-  { href: "/dashboard/volunteers", icon: Handshake, label: "Volunteers" },
-  { href: "/dashboard/branches", icon: Building, label: "Branches" },
-  { href: "/dashboard/cases", icon: Gavel, label: "Cases" },
+  { href: "/dashboard", icon: LayoutDashboard, label: "Panel" },
+  { href: "/dashboard/users", icon: Users, label: "Oportunidades" },
+  { href: "/dashboard/volunteers", icon: Handshake, label: "Voluntarios" },
+  { href: "/dashboard/branches", icon: Building, label: "Sucursales" },
+  { href: "/dashboard/cases", icon: Gavel, label: "Casos" },
 ];
 
+// Esta es la función que crea el componente de navegación del dashboard.
 export function DashboardNav() {
+  // `usePathname` nos da la ruta actual de la URL, por ejemplo, "/dashboard/users".
   const pathname = usePathname();
 
+  // Devolvemos una lista (`SidebarMenu`) que contiene los elementos del menú.
   return (
     <SidebarMenu>
+      {/* Usamos `map` para recorrer nuestro array `navItems` y crear un botón por cada elemento. */}
       {navItems.map((item) => (
         <SidebarMenuItem key={item.href}>
           <SidebarMenuButton
-            asChild
+            asChild // `asChild` permite que el botón se comporte como el `Link` que contiene.
+            // `isActive` resalta el botón si la ruta actual coincide con la del elemento del menú.
             isActive={
               item.href === '/dashboard'
                 ? pathname === item.href
@@ -39,8 +51,8 @@ export function DashboardNav() {
             }
           >
             <Link href={item.href}>
-              <item.icon />
-              {item.label}
+              <item.icon /> {/* Muestra el ícono del elemento. */}
+              {item.label} {/* Muestra el texto del elemento. */}
             </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>

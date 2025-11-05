@@ -1,3 +1,4 @@
+// Importamos iconos y componentes de la interfaz de usuario.
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,36 +24,44 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// Importamos los datos de ejemplo para los voluntarios.
 import { volunteers } from "@/lib/data";
 
+// Esta es la función principal que define la página de Voluntarios.
 export default function VolunteersPage() {
+  // La función devuelve una tarjeta (Card) que contiene la tabla de voluntarios.
   return (
     <Card>
+      {/* El encabezado de la tarjeta con título, descripción y botón para agregar. */}
       <CardHeader>
         <div className="flex items-center justify-between">
             <div>
-                <CardTitle>Volunteers</CardTitle>
-                <CardDescription>Manage registered volunteers and their information.</CardDescription>
+                <CardTitle>Voluntarios</CardTitle>
+                <CardDescription>Gestiona los voluntarios registrados y su información.</CardDescription>
             </div>
             <Button size="sm" className="gap-1">
                 <PlusCircle className="h-4 w-4" />
-                Add Volunteer
+                Agregar Voluntario
             </Button>
         </div>
       </CardHeader>
+      {/* El contenido de la tarjeta es la tabla con la lista de voluntarios. */}
       <CardContent>
         <Table>
+          {/* El encabezado de la tabla define las columnas. */}
           <TableHeader>
             <TableRow>
-              <TableHead>Volunteer</TableHead>
-              <TableHead>Expertise</TableHead>
-              <TableHead className="hidden md:table-cell">Availability</TableHead>
+              <TableHead>Voluntario</TableHead>
+              <TableHead>Especialidad</TableHead>
+              <TableHead className="hidden md:table-cell">Disponibilidad</TableHead>
               <TableHead>
-                <span className="sr-only">Actions</span>
+                <span className="sr-only">Acciones</span>
               </TableHead>
             </TableRow>
           </TableHeader>
+          {/* El cuerpo de la tabla se llena con los datos de los voluntarios. */}
           <TableBody>
+            {/* Usamos la función 'map' para crear una fila por cada voluntario. */}
             {volunteers.map((volunteer) => (
               <TableRow key={volunteer.id}>
                 <TableCell>
@@ -70,6 +79,7 @@ export default function VolunteersPage() {
                 <TableCell>{volunteer.expertise}</TableCell>
                 <TableCell className="hidden md:table-cell">{volunteer.availability}</TableCell>
                 <TableCell>
+                  {/* Menú desplegable con acciones para cada voluntario. */}
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button aria-haspopup="true" size="icon" variant="ghost">
@@ -78,10 +88,10 @@ export default function VolunteersPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuItem>View Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
-                      <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                      <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                      <DropdownMenuItem>Ver Perfil</DropdownMenuItem>
+                      <DropdownMenuItem>Editar</DropdownMenuItem>
+                      <DropdownMenuItem className="text-destructive">Eliminar</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

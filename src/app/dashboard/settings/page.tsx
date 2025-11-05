@@ -1,3 +1,4 @@
+// Importamos los componentes de tarjeta (Card) para la interfaz de usuario.
 import {
     Card,
     CardContent,
@@ -6,16 +7,20 @@ import {
     CardTitle,
   } from "@/components/ui/card";
   
+  // Esta es la función principal que define la página de Configuración.
   export default function SettingsPage() {
+    // La función devuelve el contenido de la página.
     return (
       <div className="space-y-6">
         <Card>
+          {/* El encabezado de la tarjeta muestra el título y la descripción de la página. */}
           <CardHeader>
-            <CardTitle>Settings</CardTitle>
-            <CardDescription>Manage your application settings here.</CardDescription>
+            <CardTitle>Configuración</CardTitle>
+            <CardDescription>Gestiona la configuración de tu aplicación aquí.</CardDescription>
           </CardHeader>
+          {/* El contenido de la tarjeta, por ahora, solo muestra un mensaje. */}
           <CardContent>
-            <p>Settings page is under construction.</p>
+            <p>La página de configuración está en construcción.</p>
           </CardContent>
         </Card>
       </div>
