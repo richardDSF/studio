@@ -45,7 +45,7 @@ export default function RutasPage() {
             Recogidas Pendientes
           </CardTitle>
           <CardDescription>
-            Documentos listos en sucursales esperando ser asignados a una ruta de recogida.
+            Documentos listos en puntos autorizados esperando ser asignados a una ruta de recogida.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -53,7 +53,7 @@ export default function RutasPage() {
             <Table>
                 <TableHeader>
                     <TableRow>
-                        <TableHead>Sucursal</TableHead>
+                        <TableHead>Punto Autorizado</TableHead>
                         <TableHead>Caso</TableHead>
                         <TableHead>Cliente</TableHead>
                         <TableHead className="text-right">Documentos</TableHead>
@@ -135,7 +135,7 @@ export default function RutasPage() {
                             </DropdownMenu>
                         </div>
                         
-                        {/* Lista de paradas (sucursales) en la ruta. */}
+                        {/* Lista de paradas (puntos autorizados) en la ruta. */}
                         <div className="space-y-2">
                            <h4 className="font-semibold">Paradas:</h4>
                            <ul className="space-y-2">

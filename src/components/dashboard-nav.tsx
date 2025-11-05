@@ -30,7 +30,7 @@ const navItems = [
   { href: "/dashboard", icon: LayoutDashboard, label: "Reportes" },
   { href: "/dashboard/users", icon: Users, label: "Oportunidades" },
   { href: "/dashboard/volunteers", icon: Handshake, label: "Voluntarios" },
-  { href: "/dashboard/branches", icon: Building, label: "Sucursales" },
+  { href: "/dashboard/branches", icon: Building, label: "Puntos Autorizados" },
   { href: "/dashboard/amparos", icon: Gavel, label: "Amparos" },
   { href: "/dashboard/amparos-mep", icon: School, label: "Amparos MEP" },
   { href: "/dashboard/ejecuciones", icon: PlayCircle, label: "Ejecuciones" },

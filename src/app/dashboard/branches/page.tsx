@@ -23,34 +23,34 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// Importamos los datos de ejemplo para las sucursales.
+// Importamos los datos de ejemplo para los puntos autorizados.
 import { branches } from "@/lib/data";
 
-// Esta es la función principal que define la página de Sucursales.
+// Esta es la función principal que define la página de Puntos Autorizados.
 export default function BranchesPage() {
-  // La función devuelve una tarjeta (Card) que contiene la tabla de sucursales.
+  // La función devuelve una tarjeta (Card) que contiene la tabla de puntos autorizados.
   return (
     <Card>
-      {/* El encabezado de la tarjeta muestra el título y un botón para agregar nuevas sucursales. */}
+      {/* El encabezado de la tarjeta muestra el título y un botón para agregar nuevos puntos. */}
       <CardHeader>
         <div className="flex items-center justify-between">
             <div>
-                <CardTitle>Sucursales</CardTitle>
+                <CardTitle>Puntos Autorizados</CardTitle>
                 <CardDescription>Gestiona los puntos autorizados y su información.</CardDescription>
             </div>
             <Button size="sm" className="gap-1">
                 <PlusCircle className="h-4 w-4" />
-                Agregar Sucursal
+                Agregar Punto Autorizado
             </Button>
         </div>
       </CardHeader>
-      {/* El contenido de la tarjeta es la tabla con la lista de sucursales. */}
+      {/* El contenido de la tarjeta es la tabla con la lista de puntos autorizados. */}
       <CardContent>
         <Table>
           {/* El encabezado de la tabla define las columnas. */}
           <TableHeader>
             <TableRow>
-              <TableHead>Nombre de Sucursal</TableHead>
+              <TableHead>Nombre del Punto Autorizado</TableHead>
               <TableHead>Dirección</TableHead>
               <TableHead className="hidden md:table-cell">Gerente</TableHead>
               <TableHead>
@@ -58,9 +58,9 @@ export default function BranchesPage() {
               </TableHead>
             </TableRow>
           </TableHeader>
-          {/* El cuerpo de la tabla se llena con los datos de las sucursales. */}
+          {/* El cuerpo de la tabla se llena con los datos de los puntos autorizados. */}
           <TableBody>
-            {/* Usamos la función 'map' para crear una fila en la tabla por cada sucursal en nuestros datos. */}
+            {/* Usamos la función 'map' para crear una fila en la tabla por cada punto en nuestros datos. */}
             {branches.map((branch) => (
               <TableRow key={branch.id}>
                 <TableCell className="font-medium">{branch.name}</TableCell>
