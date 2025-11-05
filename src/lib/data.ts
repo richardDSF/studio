@@ -89,16 +89,18 @@ export const users: User[] = [
 
 // Lista de voluntarios de ejemplo.
 export const volunteers: Volunteer[] = [
-  { id: 'VOL001', name: 'Eduardo Martins', email: 'eduardo.m@example.com', expertise: 'Derecho Civil', availability: 'Fines de semana', avatarUrl: 'https://picsum.photos/seed/avatar6/40/40' },
-  { id: 'VOL002', name: 'Fernanda Lima', email: 'fernanda.l@example.com', expertise: 'Derecho Penal', availability: 'Días de semana', avatarUrl: 'https://picsum.photos/seed/avatar7/40/40' },
-  { id: 'VOL003', name: 'Gabriel Rocha', email: 'gabriel.r@example.com', expertise: 'Derecho de Familia', availability: 'Fines de semana', avatarUrl: 'https://picsum.photos/seed/avatar8/40/40' },
+  { id: 'VOL001', name: 'Eduardo Martins', email: 'eduardo.m@example.com', expertise: 'Mensajería', availability: 'Días de semana', avatarUrl: 'https://picsum.photos/seed/avatar6/40/40' },
+  { id: 'VOL002', name: 'Fernanda Lima', email: 'fernanda.l@example.com', expertise: 'Diseño Gráfico', availability: 'Fines de semana', avatarUrl: 'https://picsum.photos/seed/avatar7/40/40' },
+  { id: 'VOL003', name: 'Gabriel Rocha', email: 'gabriel.r@example.com', expertise: 'Soporte Técnico', availability: 'Tardes', avatarUrl: 'https://picsum.photos/seed/avatar8/40/40' },
 ];
 
 // Lista de puntos autorizados de ejemplo.
 export const branches: Branch[] = [
     { id: 'BRH001', name: 'Oficina Central', address: 'San José, San José', manager: 'Ricardo Gomes' },
-    { id: 'BRH002', name: 'Punto Autorizado Heredia', address: 'Heredia, Heredia', manager: 'Helena Souza' },
-    { id: 'BRH003', name: 'Punto Autorizado Cartago', address: 'Cartago, El Tejar', manager: 'Mario Vega' },
+    { id: 'BRH002', name: 'Punto Autorizado Heredia', address: 'Heredia, Santo Domingo', manager: 'Helena Souza' },
+    { id: 'BRH003', name: 'Punto Autorizado Cartago', address: 'Cartago, La Unión', manager: 'Mario Vega' },
+    { id: 'BRH004', name: 'Punto Autorizado Alajuela', address: 'Alajuela, San Ramón', manager: 'Lucía Montero' },
+    { id: 'BRH005', name: 'Punto Autorizado Guanacaste', address: 'Guanacaste, Liberia', manager: 'Jorge Solís' },
 ];
 
 // Lista de casos de ejemplo.
@@ -144,13 +146,13 @@ export const routes: Route[] = [
       {
         branchId: 'BRH002',
         branchName: 'Punto Autorizado Heredia',
-        address: 'Heredia, Heredia',
+        address: 'Heredia, Santo Domingo',
         pickups: pendingPickups.filter(p => p.branchId === 'BRH002')
       },
       {
         branchId: 'BRH003',
         branchName: 'Punto Autorizado Cartago',
-        address: 'Cartago, El Tejar',
+        address: 'Cartago, La Unión',
         pickups: pendingPickups.filter(p => p.branchId === 'BRH003')
       }
     ]
