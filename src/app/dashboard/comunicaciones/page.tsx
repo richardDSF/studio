@@ -257,10 +257,24 @@ function InternalNotesList({ notes }: { notes: InternalNote[] }) {
 }
 
 function CombinedChatList({ messages, notes }: { messages: ChatMessage[], notes: InternalNote[] }) {
-    // Agregar un campo 'type' y un 'date' para ordenar
+    // Helper para convertir "10:15 AM" a un objeto Date
+    const parseTime = (timeStr: string) => {
+        const today = new Date();
+        const [time, modifier] = timeStr.split(' ');
+        let [hours, minutes] = time.split(':').map(Number);
+      
+        if (hours === 12) {
+          hours = modifier === 'AM' ? 0 : 12;
+        } else {
+          hours = modifier === 'PM' ? hours + 12 : hours;
+        }
+      
+        return new Date(today.getFullYear(), today.getMonth(), today.getDate(), hours, minutes);
+    };
+
     const combined = [
-        ...messages.map(m => ({ ...m, type: 'message', date: new Date(`1970-01-01T${m.time.replace(' ', '')}:00Z`) })),
-        ...notes.map(n => ({ ...n, type: 'note', date: new Date(`1970-01-01T${n.time.replace(' ', '')}:00Z`) }))
+        ...messages.map(m => ({ ...m, type: 'message', date: parseTime(m.time) })),
+        ...notes.map(n => ({ ...n, type: 'note', date: parseTime(n.time) }))
     ];
 
     // Ordenar por fecha/hora
