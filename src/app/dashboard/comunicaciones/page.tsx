@@ -31,14 +31,33 @@ import {
   internalNotes,
   ChatMessage,
   InternalNote,
+  cases,
 } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 // Esta es la función principal que define la página de Comunicaciones.
 export default function CommunicationsPage() {
   const [selectedConversation, setSelectedConversation] = React.useState(
     conversations[0]
   );
+  
+  const getCasePath = (caseId: string) => {
+    const caseItem = cases.find(c => c.id === caseId);
+    if (!caseItem) return '/dashboard/cases';
+
+    if (caseItem.id.endsWith('-CA')) {
+        return `/dashboard/ejecuciones/${caseId.toLowerCase()}`;
+    }
+    if (caseItem.title?.includes('MEP')) {
+        return `/dashboard/amparos-mep/${caseId.toLowerCase()}`;
+    }
+    if (caseItem.title?.includes('CCSS')) {
+        return `/dashboard/amparos/${caseId.toLowerCase()}`;
+    }
+    return `/dashboard/cases/${caseId.toLowerCase()}`;
+  }
+
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[260px_340px_1fr] h-[calc(100vh-8rem)] gap-2">
@@ -133,9 +152,15 @@ export default function CommunicationsPage() {
               </AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="font-semibold">{selectedConversation.name}</h3>
+              <h3 className="font-semibold">
+                <Link href="/dashboard/clientes" className="hover:underline">
+                    {selectedConversation.name}
+                </Link>
+              </h3>
               <p className="text-xs text-muted-foreground">
-                ID del Caso: {selectedConversation.caseId}
+                <Link href={getCasePath(selectedConversation.caseId)} className="hover:underline">
+                    ID del Caso: {selectedConversation.caseId}
+                </Link>
               </p>
             </div>
           </div>
