@@ -20,6 +20,7 @@ import {
   Smile,
   MessageCircle,
   MessagesSquare,
+  List,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -148,8 +149,12 @@ export default function CommunicationsPage() {
             {selectedConversation.status}
           </Badge>
         </div>
-        <Tabs defaultValue="messages" className="flex-1 flex flex-col">
+        <Tabs defaultValue="all" className="flex-1 flex flex-col">
             <TabsList className="mx-4 mt-4">
+                <TabsTrigger value="all" className="gap-1">
+                    <List className="h-4 w-4"/>
+                    Todo
+                </TabsTrigger>
                 <TabsTrigger value="messages" className="gap-1">
                     <MessagesSquare className="h-4 w-4"/>
                     Mensajes
@@ -159,6 +164,12 @@ export default function CommunicationsPage() {
                     Comentarios
                 </TabsTrigger>
             </TabsList>
+            <TabsContent value="all" className="flex-1 p-4 space-y-4 overflow-y-auto">
+                 <CombinedChatList 
+                    messages={chatMessages.filter(msg => msg.conversationId === selectedConversation.id)} 
+                    notes={internalNotes.filter(note => note.conversationId === selectedConversation.id)}
+                 />
+            </TabsContent>
             <TabsContent value="messages" className="flex-1 p-4 space-y-4 overflow-y-auto">
                  <ChatMessagesList messages={chatMessages.filter(msg => msg.conversationId === selectedConversation.id)} />
             </TabsContent>
@@ -241,6 +252,64 @@ function InternalNotesList({ notes }: { notes: InternalNote[] }) {
                     </div>
                 </div>
             ))}
+        </div>
+    );
+}
+
+function CombinedChatList({ messages, notes }: { messages: ChatMessage[], notes: InternalNote[] }) {
+    // Agregar un campo 'type' y un 'date' para ordenar
+    const combined = [
+        ...messages.map(m => ({ ...m, type: 'message', date: new Date(`1970-01-01T${m.time.replace(' ', '')}:00Z`) })),
+        ...notes.map(n => ({ ...n, type: 'note', date: new Date(`1970-01-01T${n.time.replace(' ', '')}:00Z`) }))
+    ];
+
+    // Ordenar por fecha/hora
+    combined.sort((a, b) => a.date.getTime() - b.date.getTime());
+    
+    return (
+        <div className="space-y-4">
+            {combined.map((item, index) => {
+                if (item.type === 'message') {
+                    const msg = item as ChatMessage & { date: Date };
+                    return (
+                        <div key={`msg-${index}`} className={`flex items-start gap-3 ${msg.senderType === 'agent' ? 'justify-end' : ''}`}>
+                            {msg.senderType === 'client' && (
+                            <Avatar className="h-9 w-9 border">
+                                <AvatarImage src={msg.avatarUrl} />
+                                <AvatarFallback>{msg.senderName.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            )}
+                            <div className={`flex flex-col ${msg.senderType === 'agent' ? 'items-end' : 'items-start'}`}>
+                            <div className={`max-w-md rounded-lg px-3 py-2 ${msg.senderType === 'agent' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                                <p className="text-sm">{msg.text}</p>
+                            </div>
+                            <span className="text-xs text-muted-foreground mt-1">{msg.time}</span>
+                            </div>
+                            {msg.senderType === 'agent' && (
+                            <Avatar className="h-9 w-9 border">
+                                <AvatarImage src={msg.avatarUrl} />
+                                <AvatarFallback>{msg.senderName.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            )}
+                        </div>
+                    );
+                } else {
+                    const note = item as InternalNote & { date: Date };
+                    return (
+                        <div key={`note-${index}`} className="flex items-start gap-3">
+                            <Avatar className="h-9 w-9 border">
+                                <AvatarImage src={note.avatarUrl} />
+                                <AvatarFallback>{note.senderName.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                                <p className="text-sm font-semibold">{note.senderName}</p>
+                                <p className="text-sm text-gray-700 mt-1">{note.text}</p>
+                                <p className="text-xs text-muted-foreground mt-2">{note.time}</p>
+                            </div>
+                        </div>
+                    );
+                }
+            })}
         </div>
     );
 }
