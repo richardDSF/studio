@@ -49,7 +49,14 @@ const getStatusVariant = (status: string) => {
 }
 
 // Esta es la función principal que define la página de Casos.
-export default function CasesPage() {
+export default function CasesPage({ searchParams }: { searchParams?: { client?: string } }) {
+  const clientName = searchParams?.client;
+  const filteredCases = clientName 
+    ? cases.filter(c => c.clientName === clientName) 
+    : cases;
+  
+  const pageTitle = clientName ? `Casos de ${clientName}` : 'Todos los Casos';
+  const pageDescription = clientName ? `Viendo todos los casos para ${clientName}.` : 'Gestiona todos los casos legales.';
   // La página utiliza un sistema de pestañas (Tabs) para filtrar los casos.
   return (
     <Tabs defaultValue="all">
@@ -60,21 +67,28 @@ export default function CasesPage() {
                 <TabsTrigger value="contenciosa">Contenciosa</TabsTrigger>
                 <TabsTrigger value="no-contenciosa">No Contenciosa</TabsTrigger>
             </TabsList>
-            <Button size="sm" className="gap-1">
-                <PlusCircle className="h-4 w-4" />
-                Agregar Caso
-            </Button>
+            <div className="flex items-center gap-2">
+                {clientName && (
+                    <Button variant="outline" asChild>
+                        <Link href="/dashboard/cases">Ver todos los casos</Link>
+                    </Button>
+                )}
+                <Button size="sm" className="gap-1">
+                    <PlusCircle className="h-4 w-4" />
+                    Agregar Caso
+                </Button>
+            </div>
         </div>
       {/* Contenido de la pestaña "Todos". Muestra una tabla con todos los casos. */}
       <TabsContent value="all">
         <Card>
           <CardHeader>
-            <CardTitle>Todos los Casos</CardTitle>
-            <CardDescription>Gestiona todos los casos legales.</CardDescription>
+            <CardTitle>{pageTitle}</CardTitle>
+            <CardDescription>{pageDescription}</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Reutilizamos el componente CasesTable para mostrar la tabla. */}
-            <CasesTable cases={cases} />
+            <CasesTable cases={filteredCases} />
           </CardContent>
         </Card>
       </TabsContent>
@@ -86,7 +100,7 @@ export default function CasesPage() {
             <CardDescription>Gestiona los casos legales de tipo contenciosa.</CardDescription>
           </CardHeader>
           <CardContent>
-            <CasesTable cases={cases.filter(c => c.category === 'Contenciosa')} />
+            <CasesTable cases={filteredCases.filter(c => c.category === 'Contenciosa')} />
           </CardContent>
         </Card>
       </TabsContent>
@@ -98,7 +112,7 @@ export default function CasesPage() {
             <CardDescription>Gestiona los casos legales de tipo no contenciosa.</CardDescription>
           </CardHeader>
           <CardContent>
-            <CasesTable cases={cases.filter(c => c.category === 'No Contenciosa')} />
+            <CasesTable cases={filteredCases.filter(c => c.category === 'No Contenciosa')} />
           </CardContent>
         </Card>
       </TabsContent>

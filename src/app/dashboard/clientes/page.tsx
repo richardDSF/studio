@@ -27,6 +27,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // Importamos los datos de ejemplo para los usuarios.
 import { users } from "@/lib/data";
+import Link from "next/link";
 
 // Esta es la función principal que define la página de Clientes.
 export default function ClientesPage() {
@@ -83,7 +84,11 @@ export default function ClientesPage() {
                     <div className="text-sm text-muted-foreground">{user.phone}</div>
                 </TableCell>
                 <TableCell>
-                  <Badge variant='default'>1</Badge>
+                  <Button variant='link' asChild>
+                    <Link href={`/dashboard/cases?client=${encodeURIComponent(user.name)}`}>
+                        <Badge variant='default'>1</Badge>
+                    </Link>
+                  </Button>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">{user.registeredOn}</TableCell>
                 <TableCell>
