@@ -1,181 +1,173 @@
 // Importamos los componentes e íconos necesarios para la página de comunicaciones.
+"use client";
+import React from "react";
 import {
-    Avatar,
-    AvatarFallback,
-    AvatarImage,
-  } from "@/components/ui/avatar";
-  import { Button } from "@/components/ui/button";
-  import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardFooter
-  } from "@/components/ui/card";
-  import { Input } from "@/components/ui/input";
-  import { Send, Search, PlusCircle, MessageSquare, Users, Hash } from "lucide-react";
-  
-  // Datos de ejemplo para los canales y mensajes directos.
-  const channels = [
-    { id: "C01", name: "General" },
-    { id: "C02", name: "Casos Urgentes" },
-    { id: "C03", name: "Anuncios" },
-  ];
-  
-  const directMessages = [
-    { id: "U01", name: "Jorge Ortiz", avatar: "https://picsum.photos/seed/staff1/40/40", online: true },
-    { id: "U02", name: "Raizza Mildrey", avatar: "https://picsum.photos/seed/staff2/40/40", online: false },
-    { id: "U03", name: "Freddy Bravo", avatar: "https://picsum.photos/seed/staff3/40/40", online: true },
-  ];
-  
-  // Datos de ejemplo para los mensajes en el chat activo.
-  const activeChatMessages = [
-    {
-      sender: "Jorge Ortiz",
-      avatar: "https://picsum.photos/seed/staff1/40/40",
-      text: "Hola Raizza, ¿cómo va el amparo CAS001? El cliente preguntó por el estado.",
-      time: "10:30 AM",
-    },
-    {
-      sender: "Raizza Mildrey",
-      avatar: "https://picsum.photos/seed/staff2/40/40",
-      text: "¡Hola Jorge! Ya tenemos la sentencia a favor. Estoy preparando los documentos para la ejecución EJC001. Deberían estar listos para enviar al punto autorizado mañana.",
-      time: "10:32 AM",
-    },
-    {
-      sender: "Jorge Ortiz",
-      avatar: "https://picsum.photos/seed/staff1/40/40",
-      text: "Excelente noticia. Por favor, coordina con mensajería para la ruta de recogida en cuanto estén firmados.",
-      time: "10:35 AM",
-    },
-  ];
-  
-  // Esta es la función principal que define la página de Comunicaciones.
-  export default function CommunicationsPage() {
-    return (
-      <Card className="h-[calc(100vh-8rem)] flex flex-col">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <MessageSquare />
-            Comunicaciones Internas
-          </CardTitle>
-          <CardDescription>
-            Colabora con tu equipo a través de canales y mensajes directos.
-          </CardDescription>
-        </CardHeader>
-        {/* El contenido se divide en una barra lateral y el panel de chat principal. */}
-        <CardContent className="flex-1 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4 overflow-hidden p-0">
-          
-          {/* Barra lateral con canales y mensajes directos */}
-          <div className="flex flex-col gap-4 border-r bg-muted/20 p-4">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Buscar..." className="pl-8" />
-            </div>
-            {/* Sección de Canales */}
-            <nav className="flex-1 space-y-2">
-                <h3 className="text-xs font-semibold uppercase text-muted-foreground tracking-wider flex items-center gap-2">
-                    <Hash className="h-4 w-4"/>
-                    Canales
-                </h3>
-                <div className="space-y-1">
-                {channels.map((channel) => (
-                    <Button key={channel.id} variant="ghost" className="w-full justify-start">
-                    # {channel.name}
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Send,
+  Search,
+  PlusCircle,
+  MessageSquare,
+  Users,
+  Inbox,
+  Star,
+  Archive,
+  FileText,
+  Clock,
+  Paperclip,
+  Smile,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { conversations, chatMessages } from "@/lib/data";
+import { cn } from "@/lib/utils";
+
+// Esta es la función principal que define la página de Comunicaciones.
+export default function CommunicationsPage() {
+    const [selectedConversation, setSelectedConversation] = React.useState(conversations[0]);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-[260px_340px_1fr] h-[calc(100vh-8rem)] gap-2">
+        {/* Barra lateral de Inboxes */}
+        <Card className="hidden md:flex flex-col">
+            <CardContent className="p-4 space-y-6">
+                <div className="space-y-2">
+                    <h3 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground"><Inbox className="h-4 w-4"/> Cajas de Entrada</h3>
+                    <Button variant="ghost" className="w-full justify-start">
+                        <MessageSquare className="mr-2 h-4 w-4"/>
+                        Todas las conversaciones
                     </Button>
-                ))}
-                </div>
-            </nav>
-            {/* Sección de Mensajes Directos */}
-            <nav className="flex-1 space-y-2">
-                <h3 className="text-xs font-semibold uppercase text-muted-foreground tracking-wider flex items-center gap-2">
-                    <Users className="h-4 w-4"/>
-                    Mensajes Directos
-                </h3>
-                <div className="space-y-1">
-                {directMessages.map((dm) => (
-                    <Button key={dm.id} variant="ghost" className="w-full justify-start h-auto py-2">
-                    <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8 relative">
-                            <AvatarImage src={dm.avatar} />
-                            <AvatarFallback>{dm.name.charAt(0)}</AvatarFallback>
-                            {dm.online && (
-                                <span className="absolute bottom-0 right-0 block h-2 w-2 rounded-full bg-green-500 ring-2 ring-background" />
-                            )}
-                        </Avatar>
-                        <span>{dm.name}</span>
-                    </div>
+                    <Button variant="ghost" className="w-full justify-start">
+                        <Users className="mr-2 h-4 w-4"/>
+                        Asignadas a mí
                     </Button>
-                ))}
+                    <Button variant="ghost" className="w-full justify-start">
+                        <Star className="mr-2 h-4 w-4"/>
+                        Importantes
+                    </Button>
                 </div>
-            </nav>
-            <Button variant="outline" className="mt-auto">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Nuevo Mensaje
-            </Button>
-          </div>
-  
-          {/* Panel principal del chat */}
-          <div className="flex flex-col h-full p-4">
-            {/* Encabezado del chat activo */}
-            <div className="flex items-center gap-3 border-b pb-4">
-                <Avatar className="h-10 w-10">
-                    <AvatarImage src="https://picsum.photos/seed/staff2/40/40" />
-                    <AvatarFallback>RM</AvatarFallback>
-                </Avatar>
-                <div>
-                    <h2 className="text-lg font-semibold">Raizza Mildrey</h2>
-                    <p className="text-sm text-muted-foreground">En línea</p>
+                 <div className="space-y-2">
+                    <h3 className="text-sm font-semibold flex items-center gap-2 text-muted-foreground"><Archive className="h-4 w-4"/> Archivo</h3>
+                    <Button variant="ghost" className="w-full justify-start">
+                        <Clock className="mr-2 h-4 w-4"/>
+                        Pendientes
+                    </Button>
+                    <Button variant="ghost" className="w-full justify-start">
+                        <FileText className="mr-2 h-4 w-4"/>
+                        Cerradas
+                    </Button>
                 </div>
-            </div>
-            
-            {/* Contenedor de mensajes */}
-            <div className="flex-1 space-y-6 overflow-y-auto py-4 pr-4">
-              {activeChatMessages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`flex items-start gap-3 ${
-                    msg.sender === "Raizza Mildrey" ? "justify-end" : ""
-                  }`}
-                >
-                  {msg.sender !== "Raizza Mildrey" && (
-                    <Avatar className="h-9 w-9 border">
-                      <AvatarImage src={msg.avatar} />
-                      <AvatarFallback>{msg.sender.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                  )}
-                  <div className={`flex flex-col ${msg.sender === "Raizza Mildrey" ? "items-end" : "items-start"}`}>
-                    <div className={`max-w-md rounded-lg px-4 py-2 ${msg.sender === "Raizza Mildrey" ? "bg-primary text-primary-foreground" : "bg-muted"}`}>
-                        <p className="font-semibold text-sm">{msg.sender}</p>
-                        <p className="text-sm">{msg.text}</p>
-                    </div>
-                    <span className="text-xs text-muted-foreground mt-1">{msg.time}</span>
-                  </div>
-                  {msg.sender === "Raizza Mildrey" && (
-                    <Avatar className="h-9 w-9 border">
-                      <AvatarImage src={msg.avatar} />
-                      <AvatarFallback>{msg.sender.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                  )}
-                </div>
-              ))}
-            </div>
-  
-            {/* Área para escribir un nuevo mensaje */}
-            <div className="mt-auto border-t pt-4">
-              <div className="relative">
-                <Input
-                  placeholder="Escribe un mensaje en #General..."
-                  className="pr-12"
-                />
-                <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8">
-                  <Send className="h-4 w-4" />
+                 <Button variant="outline" className="w-full">
+                    <PlusCircle className="mr-2 h-4 w-4"/>
+                    Nueva Conversación
                 </Button>
-              </div>
+            </CardContent>
+        </Card>
+
+        {/* Lista de Conversaciones */}
+        <Card className="flex flex-col">
+            <div className="p-4 border-b">
+                 <div className="relative">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                    <Input placeholder="Buscar conversación..." className="pl-8" />
+                </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+            <CardContent className="p-0 flex-1 overflow-y-auto">
+                <nav className="space-y-1">
+                    {conversations.map((conv) => (
+                        <button
+                            key={conv.id}
+                            onClick={() => setSelectedConversation(conv)}
+                            className={cn(
+                                "w-full text-left p-3 hover:bg-muted/50 transition-colors flex items-start gap-3",
+                                selectedConversation.id === conv.id && "bg-muted"
+                            )}
+                        >
+                            <Avatar className="h-10 w-10 border">
+                                <AvatarImage src={conv.avatarUrl} />
+                                <AvatarFallback>{conv.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                                <div className="flex justify-between items-center">
+                                    <h4 className="font-semibold text-sm">{conv.name}</h4>
+                                    <span className="text-xs text-muted-foreground">{conv.time}</span>
+                                </div>
+                                <p className="text-sm text-muted-foreground truncate">{conv.lastMessage}</p>
+                            </div>
+                        </button>
+                    ))}
+                </nav>
+            </CardContent>
+        </Card>
+
+        {/* Panel de Chat Activo */}
+        <Card className="flex flex-col">
+            <div className="p-4 border-b flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 border">
+                        <AvatarImage src={selectedConversation.avatarUrl} />
+                        <AvatarFallback>{selectedConversation.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                        <h3 className="font-semibold">{selectedConversation.name}</h3>
+                        <p className="text-xs text-muted-foreground">ID del Caso: {selectedConversation.caseId}</p>
+                    </div>
+                </div>
+                <Badge variant={selectedConversation.status === 'Abierto' ? 'default' : 'secondary'}>{selectedConversation.status}</Badge>
+            </div>
+            <CardContent className="flex-1 p-4 space-y-4 overflow-y-auto">
+                 {chatMessages.filter(msg => msg.conversationId === selectedConversation.id).map((msg, index) => (
+                  <div key={index} className={`flex items-start gap-3 ${msg.senderType === 'agent' ? 'justify-end' : ''}`}>
+                     {msg.senderType === 'client' && (
+                        <Avatar className="h-9 w-9 border">
+                            <AvatarImage src={msg.avatarUrl} />
+                            <AvatarFallback>{msg.senderName.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                     )}
+                    <div className={`flex flex-col ${msg.senderType === 'agent' ? 'items-end' : 'items-start'}`}>
+                        <div className={`max-w-md rounded-lg px-3 py-2 ${msg.senderType === 'agent' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+                            <p className="text-sm">{msg.text}</p>
+                        </div>
+                        <span className="text-xs text-muted-foreground mt-1">{msg.time}</span>
+                    </div>
+                    {msg.senderType === 'agent' && (
+                        <Avatar className="h-9 w-9 border">
+                            <AvatarImage src={msg.avatarUrl} />
+                            <AvatarFallback>{msg.senderName.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                    )}
+                  </div>
+                ))}
+            </CardContent>
+            <div className="p-4 border-t bg-background">
+                 <div className="relative">
+                    <Textarea placeholder="Escribe tu mensaje..." className="pr-20" rows={2}/>
+                    <div className="absolute bottom-2 right-2 flex items-center gap-2">
+                         <Button variant="ghost" size="icon">
+                            <Paperclip className="h-4 w-4"/>
+                            <span className="sr-only">Adjuntar</span>
+                        </Button>
+                         <Button variant="ghost" size="icon">
+                            <Smile className="h-4 w-4"/>
+                             <span className="sr-only">Emoji</span>
+                        </Button>
+                        <Button size="icon">
+                            <Send className="h-4 w-4" />
+                            <span className="sr-only">Enviar</span>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </Card>
+    </div>
+  );
+}

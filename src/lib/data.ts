@@ -109,6 +109,28 @@ export type Cobro = {
     status: 'Con Sentencia' | 'Con Depósito' | 'Retirado';
   };
 
+// Estructura para conversaciones del helpdesk
+export type Conversation = {
+    id: string;
+    name: string;
+    avatarUrl: string;
+    caseId: string;
+    lastMessage: string;
+    time: string;
+    status: 'Abierto' | 'Resuelto';
+  };
+  
+  // Estructura para mensajes de chat del helpdesk
+  export type ChatMessage = {
+    id: string;
+    conversationId: string;
+    senderType: 'client' | 'agent';
+    senderName: string;
+    avatarUrl: string;
+    text: string;
+    time: string;
+  };
+
 // Lista de usuarios de ejemplo (Leads).
 export const users: User[] = [
   { id: 'USR001', name: 'Ana Silva Rojas', cedula: '1-1234-5678', email: 'ana.silva@example.com', phone: '8765-4321', status: 'Caso Creado', registeredOn: '2023-10-26', avatarUrl: 'https://picsum.photos/seed/avatar1/40/40' },
@@ -232,4 +254,20 @@ export const routes: Route[] = [
 export const cobros: Cobro[] = [
     { id: 'COB001', ejecucionId: '23-88765-1021-CA', amparoId: '23-12345-0007-CO', fechaSentencia: '2023-11-01', fechaPresentacion: '2023-11-15', status: 'Con Sentencia' },
     { id: 'COB002', ejecucionId: '23-99887-1021-CA', amparoId: '23-00234-0007-CO', fechaSentencia: '2023-11-05', fechaPresentacion: '2023-11-20', status: 'Con Depósito' },
+];
+
+// Datos de ejemplo para las conversaciones del Helpdesk
+export const conversations: Conversation[] = [
+    { id: 'CONV01', name: 'Ana Silva Rojas', avatarUrl: 'https://picsum.photos/seed/avatar1/40/40', caseId: '23-12345-0007-CO', lastMessage: 'Perfecto, quedo a la espera. Muchas gracias.', time: '10:15 AM', status: 'Abierto' },
+    { id: 'CONV02', name: 'Bruno Costa Marin', avatarUrl: 'https://picsum.photos/seed/avatar2/40/40', caseId: '23-00234-0007-CO', lastMessage: '¿Podrían confirmarme la recepción de los documentos?', time: 'Ayer', status: 'Abierto' },
+    { id: 'CONV03', name: 'John Doe', avatarUrl: 'https://picsum.photos/seed/avatarJD/40/40', caseId: '23-54321-0007-CO', lastMessage: 'Gracias por la ayuda.', time: '2d', status: 'Resuelto' },
+];
+
+// Datos de ejemplo para los mensajes de un chat
+export const chatMessages: ChatMessage[] = [
+    { id: 'MSG01', conversationId: 'CONV01', senderType: 'client', senderName: 'Ana Silva Rojas', avatarUrl: 'https://picsum.photos/seed/avatar1/40/40', text: 'Buenos días, adjunto los documentos que me solicitaron. ¿Necesitan algo más?', time: '10:05 AM' },
+    { id: 'MSG02', conversationId: 'CONV01', senderType: 'agent', senderName: 'Raizza Mildrey', avatarUrl: 'https://picsum.photos/seed/staff2/40/40', text: 'Recibido, gracias Ana. Lo revisaremos y le informaremos cualquier novedad. Saludos.', time: '10:10 AM' },
+    { id: 'MSG03', conversationId: 'CONV01', senderType: 'client', senderName: 'Ana Silva Rojas', avatarUrl: 'https://picsum.photos/seed/avatar1/40/40', text: 'Perfecto, quedo a la espera. Muchas gracias.', time: '10:15 AM' },
+    { id: 'MSG04', conversationId: 'CONV02', senderType: 'client', senderName: 'Bruno Costa Marin', avatarUrl: 'https://picsum.photos/seed/avatar2/40/40', text: 'Hola, ¿podrían confirmarme la recepción de los documentos que envié ayer?', time: '9:30 AM' },
+    { id: 'MSG05', conversationId: 'CONV02', senderType: 'agent', senderName: 'Jorge Ortiz', avatarUrl: 'https://picsum.photos/seed/staff1/40/40', text: 'Buenos días Bruno, sí, los recibimos correctamente. Ya están siendo procesados.', time: '9:35 AM' },
 ];

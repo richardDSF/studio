@@ -32,27 +32,6 @@ import {
     { name: "Documentos_Adicionales.zip", type: "zip", size: "5.8 MB" },
   ];
   
-  const messages = [
-    {
-      sender: "Cliente",
-      avatar: "https://picsum.photos/seed/avatar1/40/40",
-      text: "Buenos días, adjunto los documentos que me solicitaron. ¿Necesitan algo más?",
-      time: "Ayer a las 10:30 AM",
-    },
-    {
-      sender: "Abogado",
-      avatar: "https://picsum.photos/seed/admin-avatar/40/40",
-      text: "Recibido, gracias. Lo revisaremos y le informaremos cualquier novedad. Saludos.",
-      time: "Ayer a las 11:15 AM",
-    },
-    {
-        sender: "Cliente",
-        avatar: "https://picsum.photos/seed/avatar1/40/40",
-        text: "Perfecto, quedo a la espera. Muchas gracias.",
-        time: "Ayer a las 11:20 AM",
-      },
-  ];
-  
   // Función para obtener el ícono correspondiente según el tipo de archivo.
   const getFileIcon = (type: string) => {
     switch (type) {
@@ -99,7 +78,7 @@ import {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
           
           {/* Columna principal con detalles, generador y pruebas (60%) */}
-          <div className="space-y-6 lg:col-span-3">
+          <div className="space-y-6 lg:col-span-5">
              <Card>
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -179,48 +158,6 @@ import {
                     Subir Nuevo Archivo
                 </Button>
                </CardFooter>
-            </Card>
-          </div>
-
-          {/* Columna lateral para el módulo de Helpdesk (chat) (40%) */}
-          <div className="lg:col-span-2">
-            <Card className="flex flex-col h-full">
-              <CardHeader>
-                <CardTitle>Helpdesk</CardTitle>
-                <CardDescription>Comunicación con el cliente.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 space-y-4 overflow-y-auto">
-                {messages.map((msg, index) => (
-                  <div key={index} className={`flex items-start gap-3 ${msg.sender === 'Abogado' ? 'justify-end' : ''}`}>
-                     {msg.sender === 'Cliente' && (
-                        <Avatar className="h-9 w-9 border">
-                            <AvatarImage src={msg.avatar} />
-                            <AvatarFallback>{msg.sender.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                     )}
-                    <div className={`flex flex-col ${msg.sender === 'Abogado' ? 'items-end' : 'items-start'}`}>
-                        <div className={`max-w-xs rounded-lg px-3 py-2 ${msg.sender === 'Abogado' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
-                            <p className="text-sm">{msg.text}</p>
-                        </div>
-                        <span className="text-xs text-muted-foreground mt-1">{msg.time}</span>
-                    </div>
-                    {msg.sender === 'Abogado' && (
-                        <Avatar className="h-9 w-9 border">
-                            <AvatarImage src={msg.avatar} />
-                            <AvatarFallback>{msg.sender.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                    )}
-                  </div>
-                ))}
-              </CardContent>
-              <CardFooter className="border-t pt-4">
-                <div className="relative w-full">
-                  <Textarea placeholder="Escribe tu mensaje..." className="pr-16" />
-                  <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2">
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardFooter>
             </Card>
           </div>
         </div>
