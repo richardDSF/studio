@@ -151,6 +151,15 @@ export type JudicialNotification = {
     asignadaA: string;
 };
 
+// Estructura para notificaciones indefinidas
+export type UndefinedNotification = {
+  id: string;
+  subject: string;
+  receivedDate: string;
+  assignedTo: string;
+};
+
+
 // Estructura para las tareas
 export type Task = {
   id: string;
@@ -317,6 +326,12 @@ export const judicialNotifications: JudicialNotification[] = [
     { id: 'NOT003', expediente: '23-88765-1021-CA', acto: 'Curso', fecha: '2023-11-19', status: 'Leída', asignadaA: 'Sistema' },
     { id: 'NOT004', expediente: '23-54321-0007-CO', acto: 'Providencia', fecha: '2023-11-22', status: 'Pendiente', asignadaA: 'Sistema' },
     { id: 'NOT005', expediente: '23-00112-1016-CA', acto: 'Con Lugar sin Costas', fecha: '2023-11-18', status: 'Leída', asignadaA: 'Sistema' },
+];
+
+// Lista de notificaciones indefinidas de ejemplo
+export const undefinedNotifications: UndefinedNotification[] = [
+    { id: 'UNDEF001', subject: 'FW: Actualización de estado', receivedDate: '2023-11-22 14:30', assignedTo: 'Richard Milán Vargas' },
+    { id: 'UNDEF002', subject: 'Consulta Urgente', receivedDate: '2023-11-22 15:00', assignedTo: 'Richard Milán Vargas' },
 ];
 
 // Lista de tareas de ejemplo

@@ -1,5 +1,5 @@
 // Importamos componentes e íconos necesarios.
-import { MoreHorizontal, AlertTriangle } from "lucide-react";
+import { MoreHorizontal, AlertTriangle, Inbox } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,8 +24,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 // Importamos los datos de ejemplo.
-import { judicialNotifications, JudicialNotification } from "@/lib/data";
+import { judicialNotifications, undefinedNotifications, JudicialNotification, UndefinedNotification } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 // Función para obtener la variante de la insignia según el estado.
@@ -47,28 +48,48 @@ const getActoVariant = (acto: JudicialNotification['acto']) => {
     }
 };
 
-// Página principal de Notificaciones Judiciales.
+// Página principal de Notificaciones.
 export default function NotificacionesPage() {
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Notificaciones Judiciales</CardTitle>
-            <CardDescription>
-              Gestiona las notificaciones judiciales recibidas automáticamente.
-            </CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <NotificationsTable notifications={judicialNotifications} />
-      </CardContent>
-    </Card>
+    <Tabs defaultValue="judiciales">
+        <TabsList className="mb-4">
+            <TabsTrigger value="judiciales">Notificaciones Judiciales</TabsTrigger>
+            <TabsTrigger value="indefinidas">
+                Notificaciones Indefinidas
+                <Badge variant="destructive" className="ml-2">{undefinedNotifications.length}</Badge>
+            </TabsTrigger>
+        </TabsList>
+        <TabsContent value="judiciales">
+            <Card>
+            <CardHeader>
+                <CardTitle>Notificaciones Judiciales</CardTitle>
+                <CardDescription>
+                Gestiona las notificaciones judiciales recibidas y clasificadas automáticamente.
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <NotificationsTable notifications={judicialNotifications} />
+            </CardContent>
+            </Card>
+        </TabsContent>
+        <TabsContent value="indefinidas">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Notificaciones Indefinidas</CardTitle>
+                    <CardDescription>
+                        Estas notificaciones no pudieron ser procesadas automáticamente. Por favor, clasifíquelas para entrenar al sistema.
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <UndefinedNotificationsTable notifications={undefinedNotifications} />
+                </CardContent>
+            </Card>
+        </TabsContent>
+    </Tabs>
   );
 }
 
-// Componente para la tabla de notificaciones.
+// Componente para la tabla de notificaciones judiciales.
 function NotificationsTable({ notifications }: { notifications: JudicialNotification[] }) {
     return (
         <div className="relative w-full overflow-auto">
@@ -86,7 +107,6 @@ function NotificationsTable({ notifications }: { notifications: JudicialNotifica
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {/* Mapeamos cada notificación a una fila de la tabla. */}
                 {notifications.map((notification) => (
                 <TableRow 
                     key={notification.id} 
@@ -108,7 +128,6 @@ function NotificationsTable({ notifications }: { notifications: JudicialNotifica
                     </TableCell>
                     <TableCell>{notification.asignadaA}</TableCell>
                     <TableCell>
-                    {/* Menú de acciones para cada notificación. */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                         <Button aria-haspopup="true" size="icon" variant="ghost">
@@ -127,6 +146,57 @@ function NotificationsTable({ notifications }: { notifications: JudicialNotifica
                 </TableRow>
                 ))}
             </TableBody>
+            </Table>
+        </div>
+    );
+}
+
+// Componente para la tabla de notificaciones indefinidas
+function UndefinedNotificationsTable({ notifications }: { notifications: UndefinedNotification[] }) {
+    return (
+        <div className="relative w-full overflow-auto">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Asunto del Correo</TableHead>
+                        <TableHead>Fecha de Recibido</TableHead>
+                        <TableHead>Asignada a</TableHead>
+                        <TableHead>
+                            <span className="sr-only">Acciones</span>
+                        </TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {notifications.map((notification) => (
+                        <TableRow key={notification.id} className="hover:bg-muted/50">
+                            <TableCell>
+                                <div className="font-medium flex items-center gap-2">
+                                    <Inbox className="h-4 w-4 text-muted-foreground"/>
+                                    {notification.subject}
+                                </div>
+                            </TableCell>
+                            <TableCell>{notification.receivedDate}</TableCell>
+                            <TableCell>{notification.assignedTo}</TableCell>
+                            <TableCell>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                                            <MoreHorizontal className="h-4 w-4" />
+                                            <span className="sr-only">Alternar menú</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                        <DropdownMenuItem>Ver Correo Original</DropdownMenuItem>
+                                        <DropdownMenuItem>Clasificar y Entrenar</DropdownMenuItem>
+                                        <DropdownMenuItem>Asignar a...</DropdownMenuItem>
+                                        <DropdownMenuItem className="text-destructive">Eliminar</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
             </Table>
         </div>
     );
