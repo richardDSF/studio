@@ -31,7 +31,7 @@ import {
   internalNotes,
   ChatMessage,
   InternalNote,
-  cases,
+  credits,
 } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -42,20 +42,11 @@ export default function CommunicationsPage() {
     conversations[0]
   );
   
-  const getCasePath = (caseId: string) => {
-    const caseItem = cases.find(c => c.id === caseId);
-    if (!caseItem) return '/dashboard/cases';
-
-    if (caseItem.id.endsWith('-CA')) {
-        return `/dashboard/ejecuciones/${caseId.toLowerCase()}`;
-    }
-    if (caseItem.title?.includes('MEP')) {
-        return `/dashboard/amparos-mep/${caseId.toLowerCase()}`;
-    }
-    if (caseItem.title?.includes('CCSS')) {
-        return `/dashboard/amparos/${caseId.toLowerCase()}`;
-    }
-    return `/dashboard/cases/${caseId.toLowerCase()}`;
+  const getCreditPath = (creditId: string) => {
+    // La nueva lógica es más simple, solo enlaza al detalle del crédito.
+    const credit = credits.find(c => c.operationNumber === creditId);
+    if (!credit) return '/dashboard/creditos'; // Fallback a la lista principal
+    return `/dashboard/creditos/${creditId}`;
   }
 
 
@@ -158,8 +149,8 @@ export default function CommunicationsPage() {
                 </Link>
               </h3>
               <p className="text-xs text-muted-foreground">
-                <Link href={getCasePath(selectedConversation.caseId)} className="hover:underline">
-                    ID del Caso: {selectedConversation.caseId}
+                <Link href={getCreditPath(selectedConversation.caseId)} className="hover:underline">
+                    ID del Crédito: {selectedConversation.caseId}
                 </Link>
               </p>
             </div>
