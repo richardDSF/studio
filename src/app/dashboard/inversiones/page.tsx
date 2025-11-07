@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { MoreHorizontal, PlusCircle, Receipt, Upload, AlertTriangle } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { MoreHorizontal, PlusCircle, Receipt, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,7 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { investments, Investment, investors, Investor, payments, Payment } from '@/lib/data'; 
+import { investments, Investment, investors, Investor } from '@/lib/data'; 
 import Link from 'next/link';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
@@ -90,7 +91,7 @@ const InvestorTableRow = React.memo(function InvestorTableRow({ investor }: { in
   );
 });
 
-function InversionistasTable() {
+function InversionistasTable({ initialData }: { initialData: Investor[] }) {
     return (
         <Table>
           <TableHeader>
@@ -105,7 +106,7 @@ function InversionistasTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {investors.map((investor) => (
+            {initialData.map((investor) => (
               <InvestorTableRow key={investor.id} investor={investor} />
             ))}
           </TableBody>
@@ -168,7 +169,7 @@ const InvestmentTableRow = React.memo(function InvestmentTableRow({ investment }
   );
 });
 
-function InversionesTable() {
+function InversionesTable({ initialData }: { initialData: Investment[] }) {
     return (
         <Table>
           <TableHeader>
@@ -185,7 +186,7 @@ function InversionesTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {investments.map((investment) => (
+            {initialData.map((investment) => (
               <InvestmentTableRow key={investment.investmentNumber} investment={investment} />
             ))}
           </TableBody>
@@ -193,60 +194,63 @@ function InversionesTable() {
     );
 }
 
-// --- Funciones de Pagos ---
-const getSourceVariant = (source: Payment['source']) => {
-    switch (source) {
-        case 'Planilla': return 'secondary';
-        case 'Ventanilla': return 'outline';
-        case 'Transferencia': return 'default';
-        default: return 'outline';
-    }
-};
+// --- Funciones de Pago a Inversionistas ---
+const InvestorPaymentTableRow = React.memo(function InvestorPaymentTableRow({ investment }: { investment: Investment }) {
+  const annualInterest = investment.amount * (investment.rate / 100);
+  let periodsPerYear = 1;
+  switch (investment.interestFrequency) {
+    case 'Mensual': periodsPerYear = 12; break;
+    case 'Trimestral': periodsPerYear = 4; break;
+    case 'Semestral': periodsPerYear = 2; break;
+    case 'Anual': periodsPerYear = 1; break;
+  }
+  const couponInterestBruto = annualInterest / periodsPerYear;
+  const couponRetention = couponInterestBruto * 0.15;
+  const couponPaymentNeto = couponInterestBruto - couponRetention;
 
-const PaymentTableRow = React.memo(function PaymentTableRow({ payment }: { payment: Payment }) {
+  // Simulación de una fecha de pago para el ejemplo
+  const paymentDate = new Date();
+  paymentDate.setMonth(paymentDate.getMonth() -1);
+
   return (
     <TableRow>
         <TableCell className="font-medium">
-            <Link href={`/dashboard/creditos/${payment.operationNumber}`} className="hover:underline">
-                {payment.operationNumber}
+            <Link href={`/dashboard/inversiones/${investment.investmentNumber}`} className="hover:underline">
+                {investment.investmentNumber}
             </Link>
+             <div className="text-sm text-muted-foreground">{investment.investorName}</div>
         </TableCell>
-        <TableCell>{payment.debtorName}</TableCell>
-        <TableCell className="text-right font-mono">₡{payment.amount.toLocaleString('de-DE')}</TableCell>
-        <TableCell className="text-right font-mono">
-            {payment.difference ? (
-                <div className="flex items-center justify-end gap-2 text-destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                   (₡{payment.difference.toLocaleString('de-DE')})
-                </div>
-            ) : '-'}
+        <TableCell>{paymentDate.toLocaleDateString('es-CR')}</TableCell>
+        <TableCell className="text-right font-mono">{new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(couponInterestBruto)}</TableCell>
+        <TableCell className="text-right font-mono text-destructive">
+          - {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(couponRetention)}
         </TableCell>
-        <TableCell>{payment.paymentDate}</TableCell>
-        <TableCell><Badge variant={getSourceVariant(payment.source)}>{payment.source}</Badge></TableCell>
+        <TableCell className="text-right font-mono text-primary font-semibold">
+          {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(couponPaymentNeto)}
+        </TableCell>
          <TableCell className="text-right">
-            <Button variant="ghost" size="icon"><Receipt className="h-4 w-4" /><span className="sr-only">Ver Recibo</span></Button>
+            <Button variant="ghost" size="icon"><Receipt className="h-4 w-4" /><span className="sr-only">Ver Comprobante</span></Button>
         </TableCell>
     </TableRow>
   );
 });
 
-function PagosTable() {
+function InvestorPaymentsTable({ initialData }: { initialData: Investment[] }) {
     return (
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead>Operación</TableHead>
-                    <TableHead>Deudor</TableHead>
-                    <TableHead className="text-right">Monto Pagado</TableHead>
-                    <TableHead className="text-right">Diferencia</TableHead>
+                    <TableHead>Inversión</TableHead>
                     <TableHead>Fecha de Pago</TableHead>
-                    <TableHead>Fuente</TableHead>
+                    <TableHead className="text-right">Interés Bruto</TableHead>
+                    <TableHead className="text-right">Retención (15%)</TableHead>
+                    <TableHead className="text-right">Monto Pagado (Neto)</TableHead>
                     <TableHead><span className="sr-only">Acciones</span></TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {payments.map((payment) => (
-                    <PaymentTableRow key={payment.id} payment={payment} />
+                {initialData.filter(inv => inv.status === 'Activa').map((investment) => (
+                    <InvestorPaymentTableRow key={investment.investmentNumber} investment={investment} />
                 ))}
             </TableBody>
         </Table>
@@ -305,13 +309,21 @@ function RetencionesTable() {
 
 // --- Componente Principal ---
 export default function InversionesPage() {
+  const searchParams = useSearchParams();
+  const investorId = searchParams.get('investorId');
+
+  const filteredInvestors = investorId ? investors.filter(i => i.cedula === investorId) : investors;
+  const filteredInvestments = investorId ? investments.filter(i => i.investorId === investorId) : investments;
+
+  const defaultTab = searchParams.get('tab') || 'inversionistas';
+
   return (
-    <Tabs defaultValue="inversionistas">
+    <Tabs defaultValue={defaultTab}>
       <div className="flex items-center justify-between mb-4">
         <TabsList>
           <TabsTrigger value="inversionistas">Inversionistas</TabsTrigger>
           <TabsTrigger value="inversiones">Inversiones</TabsTrigger>
-          <TabsTrigger value="pagos">Pagos</TabsTrigger>
+          <TabsTrigger value="pagos">Pago a Inversionistas</TabsTrigger>
           <TabsTrigger value="retenciones">Retenciones</TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
@@ -328,7 +340,7 @@ export default function InversionesPage() {
             <CardDescription>Gestiona los inversionistas de Credipep.</CardDescription>
           </CardHeader>
           <CardContent>
-            <InversionistasTable />
+            <InversionistasTable initialData={filteredInvestors}/>
           </CardContent>
         </Card>
       </TabsContent>
@@ -339,18 +351,18 @@ export default function InversionesPage() {
             <CardDescription>Gestiona todas las inversiones de capital.</CardDescription>
           </CardHeader>
           <CardContent>
-            <InversionesTable />
+            <InversionesTable initialData={filteredInvestments}/>
           </CardContent>
         </Card>
       </TabsContent>
       <TabsContent value="pagos">
         <Card>
           <CardHeader>
-            <CardTitle>Gestión de Pagos</CardTitle>
-            <CardDescription>Aplica pagos individuales o masivos desde planillas y visualiza el historial.</CardDescription>
+            <CardTitle>Pago a Inversionistas</CardTitle>
+            <CardDescription>Historial de pagos de intereses (cupones) realizados a los inversionistas.</CardDescription>
           </CardHeader>
           <CardContent>
-            <PagosTable />
+            <InvestorPaymentsTable initialData={filteredInvestments}/>
           </CardContent>
         </Card>
       </TabsContent>

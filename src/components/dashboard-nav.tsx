@@ -23,6 +23,7 @@ import {
   Banknote,
   DollarSign,
   PiggyBank,
+  Receipt,
 } from 'lucide-react';
 
 const navItems = [
@@ -36,6 +37,7 @@ const navItems = [
   { href: '/dashboard/cobros', icon: Banknote, label: 'COBROS' },
   { href: '/dashboard/cobro-judicial', icon: Gavel, label: 'COBRO JUDICIAL' },
   { href: '/dashboard/inversiones', icon: PiggyBank, label: 'INVERSIONES' },
+  { href: '/dashboard/pagos', icon: Receipt, label: 'PAGOS' },
   { href: '/dashboard/rutas', icon: Route, label: 'RUTAS' },
   { href: '/dashboard/notificaciones', icon: Bell, label: 'NOTIFICACIONES' },
   { href: '/dashboard/tareas', icon: ClipboardCheck, label: 'TAREAS' },

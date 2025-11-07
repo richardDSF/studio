@@ -38,7 +38,7 @@ const getSourceVariant = (source: Payment['source']) => {
 
 /**
  * Componente principal de la página de Gestión de Pagos.
- * Muestra una tabla con el historial de pagos recibidos.
+ * Muestra una tabla con el historial de pagos recibidos de los deudores.
  */
 export default function PagosPage() {
   return (
@@ -46,7 +46,7 @@ export default function PagosPage() {
       <CardHeader>
         <div className="flex items-center justify-between">
             <div>
-                <CardTitle>Gestión de Pagos</CardTitle>
+                <CardTitle>Gestión de Pagos de Deudores</CardTitle>
                 <CardDescription>
                 Aplica pagos individuales o masivos desde planillas y visualiza el historial.
                 </CardDescription>
