@@ -51,8 +51,8 @@ export default function DealsPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Cédula del Lead</TableHead>
-              <TableHead>Contra</TableHead>
-              <TableHead>Tipo de Oportunidad</TableHead>
+              <TableHead>Monto Solicitado</TableHead>
+              <TableHead>Tipo de Crédito</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead className="hidden md:table-cell">Fecha de Inicio</TableHead>
               <TableHead className="hidden md:table-cell">Asignado a</TableHead>
@@ -67,11 +67,11 @@ export default function DealsPage() {
               <TableRow key={opportunity.id}>
                 <TableCell className="font-medium">{opportunity.leadCedula}</TableCell>
                 <TableCell>
-                  <Badge variant="outline">{opportunity.against}</Badge>
+                  ₡{opportunity.amount.toLocaleString('es-CR')}
                 </TableCell>
-                <TableCell>{opportunity.opportunityType}</TableCell>
+                <TableCell>{opportunity.creditType}</TableCell>
                 <TableCell>
-                  <Badge variant={opportunity.status === 'Caso Creado' ? 'default' : 'secondary'}>{opportunity.status}</Badge>
+                  <Badge variant={opportunity.status === 'Convertido' ? 'default' : 'secondary'}>{opportunity.status}</Badge>
                 </TableCell>
                 <TableCell className="hidden md:table-cell">{opportunity.startDate}</TableCell>
                 <TableCell className="hidden md:table-cell">{opportunity.assignedTo}</TableCell>
@@ -87,7 +87,7 @@ export default function DealsPage() {
                     <DropdownMenuContent align="end">
                       <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                       <DropdownMenuItem>Ver Detalle</DropdownMenuItem>
-                      <DropdownMenuItem>Convertir a Caso</DropdownMenuItem>
+                      <DropdownMenuItem>Convertir a Crédito</DropdownMenuItem>
                       <DropdownMenuItem>Editar</DropdownMenuItem>
                       <DropdownMenuItem className="text-destructive">Eliminar</DropdownMenuItem>
                     </DropdownMenuContent>
