@@ -62,13 +62,12 @@ export default function InversionesPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Inversionista</TableHead>
-              <TableHead className="text-right">Monto</TableHead>
-              <TableHead className="text-center">Interés (%)</TableHead>
-              <TableHead className="text-right">Monto Anual</TableHead>
+              <TableHead className="text-right">Monto Invertido</TableHead>
+              <TableHead className="text-center">Tasa Anual (%)</TableHead>
               <TableHead>Periodicidad</TableHead>
-              <TableHead className="text-right">Monto Mensual</TableHead>
-              <TableHead className="text-right">Retención (15%)</TableHead>
-              <TableHead className="text-right">Monto a Pagar</TableHead>
+              <TableHead className="text-right">Interés del Cupón (Bruto)</TableHead>
+              <TableHead className="text-right">Retención del Cupón (15%)</TableHead>
+              <TableHead className="text-right">Monto del Cupón (Neto)</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>
                 <span className="sr-only">Acciones</span>
@@ -88,26 +87,25 @@ export default function InversionesPage() {
 
 function InvestmentTableRow({ investment }: { investment: Investment }) {
   const annualInterest = investment.amount * (investment.rate / 100);
-  const monthlyInterest = annualInterest / 12;
-  const retention = annualInterest * 0.15;
-  
-  let paymentAmount = 0;
+  let periodsPerYear = 1;
   switch (investment.interestFrequency) {
     case 'Mensual':
-      paymentAmount = annualInterest / 12 - retention / 12;
+      periodsPerYear = 12;
       break;
     case 'Trimestral':
-      paymentAmount = annualInterest / 4 - retention / 4;
+      periodsPerYear = 4;
       break;
     case 'Semestral':
-      paymentAmount = annualInterest / 2 - retention / 2;
+      periodsPerYear = 2;
       break;
     case 'Anual':
-      paymentAmount = annualInterest - retention;
+      periodsPerYear = 1;
       break;
-    default:
-      paymentAmount = 0;
   }
+  
+  const couponInterestBruto = annualInterest / periodsPerYear;
+  const couponRetention = couponInterestBruto * 0.15;
+  const couponPaymentNeto = couponInterestBruto - couponRetention;
   
   return (
       <TableRow className="hover:bg-muted/50">
@@ -124,18 +122,15 @@ function InvestmentTableRow({ investment }: { investment: Investment }) {
           {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(investment.amount)}
         </TableCell>
         <TableCell className="text-center font-mono">{investment.rate.toFixed(2)}%</TableCell>
-        <TableCell className="text-right font-mono">
-            {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(annualInterest)}
-        </TableCell>
         <TableCell>{investment.interestFrequency}</TableCell>
         <TableCell className="text-right font-mono">
-            {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(monthlyInterest)}
+            {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(couponInterestBruto)}
         </TableCell>
         <TableCell className="text-right font-mono text-destructive">
-            - {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(retention)}
+            - {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(couponRetention)}
         </TableCell>
         <TableCell className="text-right font-mono font-semibold text-primary">
-            {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(paymentAmount)}
+            {new Intl.NumberFormat('es-CR', { style: 'currency', currency: investment.currency }).format(couponPaymentNeto)}
         </TableCell>
         <TableCell>
           <Badge variant={getStatusVariant(investment.status)}>
