@@ -86,6 +86,7 @@ export type Investment = {
   endDate: string;
   amount: number;
   currency: 'CRC' | 'USD';
+  rate: number;
   interestFrequency: 'Mensual' | 'Trimestral' | 'Semestral' | 'Anual';
   isCapitalizable: boolean;
   status: 'Activa' | 'Finalizada' | 'Liquidada';
@@ -335,9 +336,9 @@ export const credits: Credit[] = [
 ];
 
 export const investments: Investment[] = [
-    { investmentNumber: 'INV-001', investorName: 'Ricardo Vega', investorId: '2-0876-5432', startDate: '2023-01-15', endDate: '2025-01-15', amount: 10000000, currency: 'CRC', interestFrequency: 'Mensual', isCapitalizable: false, status: 'Activa' },
-    { investmentNumber: 'INV-002', investorName: 'Laura Montes', investorId: '1-0987-6543', startDate: '2023-03-01', endDate: '2024-03-01', amount: 50000, currency: 'USD', interestFrequency: 'Trimestral', isCapitalizable: true, status: 'Activa' },
-    { investmentNumber: 'INV-003', investorName: 'Ricardo Vega', investorId: '2-0876-5432', startDate: '2022-05-20', endDate: '2023-05-20', amount: 5000000, currency: 'CRC', interestFrequency: 'Anual', isCapitalizable: false, status: 'Finalizada' },
+    { investmentNumber: 'INV-001', investorName: 'Ricardo Vega', investorId: '2-0876-5432', startDate: '2023-01-15', endDate: '2025-01-15', amount: 10000000, currency: 'CRC', rate: 12, interestFrequency: 'Mensual', isCapitalizable: false, status: 'Activa' },
+    { investmentNumber: 'INV-002', investorName: 'Laura Montes', investorId: '1-0987-6543', startDate: '2023-03-01', endDate: '2024-03-01', amount: 50000, currency: 'USD', rate: 8, interestFrequency: 'Trimestral', isCapitalizable: true, status: 'Activa' },
+    { investmentNumber: 'INV-003', investorName: 'Ricardo Vega', investorId: '2-0876-5432', startDate: '2022-05-20', endDate: '2023-05-20', amount: 5000000, currency: 'CRC', rate: 10, interestFrequency: 'Anual', isCapitalizable: false, status: 'Finalizada' },
 ];
 
 export const notifications = [

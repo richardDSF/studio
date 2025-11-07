@@ -6,7 +6,7 @@ import {
   ArrowLeft,
   Paperclip,
   FileText,
-  Image as ImageIcon,
+  ImageIcon,
   FileArchive,
   FileJson,
   BookUser,
@@ -120,21 +120,13 @@ function CaseTasks({ caseId }: { caseId: string }) {
     )
 }
 
-/**
- * Esta es la página de detalle de una ejecución de sentencia específica.
- * @param {{ params: { id: string } }} props - Las propiedades que Next.js pasa a la página, incluyendo el 'id' de la ejecución desde la URL.
- */
-export default function EjecucionDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+function EjecucionDetailClient({ id }: { id: string }) {
   // Estado para controlar la visibilidad del panel lateral de chat y tareas.
   const [isChatVisible, setIsChatVisible] = useState(true);
   
   // Buscamos la ejecución específica en nuestros datos usando el 'id' de la URL.
   const caseItem = cases.find(
-    (c) => c.id.toLowerCase() === params.id.toLowerCase()
+    (c) => c.id.toLowerCase() === id.toLowerCase()
   );
 
   // Si no se encuentra la ejecución, mostramos un mensaje y un botón para volver.
@@ -328,4 +320,16 @@ export default function EjecucionDetailPage({
       </div>
     </div>
   );
+}
+
+/**
+ * Esta es la página de detalle de una ejecución de sentencia específica.
+ * @param {{ params: { id: string } }} props - Las propiedades que Next.js pasa a la página, incluyendo el 'id' de la ejecución desde la URL.
+ */
+export default function EjecucionDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
+  return <EjecucionDetailClient id={params.id} />;
 }

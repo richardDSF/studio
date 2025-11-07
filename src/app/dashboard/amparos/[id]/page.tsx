@@ -6,7 +6,7 @@ import {
   ArrowLeft,
   Paperclip,
   FileText,
-  Image as ImageIcon,
+  ImageIcon,
   FileArchive,
   FileJson,
   BookUser,
@@ -121,18 +121,13 @@ function CaseTasks({ caseId }: { caseId: string }) {
     )
 }
 
-/**
- * Esta es la página de detalle de un caso de amparo específico.
- * Se encarga de mostrar toda la información relevante de un amparo.
- * @param {{ params: { id: string } }} props - Las propiedades que Next.js pasa a la página, incluyendo el 'id' del amparo desde la URL.
- */
-export default function CaseDetailPage({ params }: { params: { id: string } }) {
+function CaseDetailClient({ id }: { id: string }) {
   // Estado para controlar la visibilidad del panel lateral de chat y tareas.
   const [isChatVisible, setIsChatVisible] = useState(true);
   
   // Buscamos el caso específico en nuestros datos usando el 'id' de la URL.
   // Convertimos el id a mayúsculas para asegurar la coincidencia.
-  const caseItem = cases.find((c) => c.id === params.id.toUpperCase());
+  const caseItem = cases.find((c) => c.id === id.toUpperCase());
 
   // Si no se encuentra el caso, mostramos un mensaje y un botón para volver.
   if (!caseItem) {
@@ -330,4 +325,13 @@ export default function CaseDetailPage({ params }: { params: { id: string } }) {
       </div>
     </div>
   );
+}
+
+/**
+ * Esta es la página de detalle de un caso de amparo específico.
+ * Se encarga de mostrar toda la información relevante de un amparo.
+ * @param {{ params: { id: string } }} props - Las propiedades que Next.js pasa a la página, incluyendo el 'id' del amparo desde la URL.
+ */
+export default function CaseDetailPage({ params }: { params: { id: string } }) {
+  return <CaseDetailClient id={params.id} />
 }

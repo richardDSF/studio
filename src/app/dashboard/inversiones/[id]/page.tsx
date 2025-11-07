@@ -35,7 +35,7 @@ function InvestmentDetailClient({ id }: { id: string }) {
     );
   }
 
-  const [rate, setRate] = useState(investment.rate.toString());
+  const [rate, setRate] = useState(investment.rate?.toString() ?? '');
   
   const retentionAmount = investment.amount * 0.15;
 
