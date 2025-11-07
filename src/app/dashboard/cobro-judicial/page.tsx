@@ -83,9 +83,9 @@ const JudicialCreditTableRow = React.memo(function JudicialCreditTableRow({ cred
   return (
     <TableRow>
       <TableCell className="font-medium">
-        {/* Enlace al detalle del crédito. */}
+        {/* Enlace al detalle del caso de cobro judicial. */}
         <Link
-          href={`/dashboard/creditos/${credit.operationNumber}`}
+          href={`/dashboard/cobro-judicial/${credit.operationNumber}`}
           className="hover:underline"
         >
           {credit.operationNumber}
@@ -110,8 +110,8 @@ const JudicialCreditTableRow = React.memo(function JudicialCreditTableRow({ cred
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
              <DropdownMenuItem asChild>
-               <Link href={`/dashboard/creditos/${credit.operationNumber}`}>
-                  Ver Crédito
+               <Link href={`/dashboard/cobro-judicial/${credit.operationNumber}`}>
+                  Ver Detalle del Juicio
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem>Ver Expediente</DropdownMenuItem>
