@@ -169,6 +169,15 @@ export type Case = {
     amparoId?: string;
 }
 
+export type Payment = {
+  id: string;
+  operationNumber: string;
+  debtorName: string;
+  paymentDate: string;
+  amount: number;
+  source: 'Planilla' | 'Ventanilla' | 'Transferencia';
+};
+
 export const users: User[] = [
     { id: 'STF001', name: 'Jorge Ortiz Solís', email: 'jorge@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff1/40/40' },
     { id: 'STF002', name: 'Raizza Mildrey Arocena', email: 'raizza@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff2/40/40' },
@@ -224,6 +233,8 @@ export const credits: Credit[] = [
     { operationNumber: 'CR-011', debtorName: 'Gabriela Vargas', debtorId: '1-7777-8888', employer: 'Poder Judicial', type: 'Regular', amount: 2000000, balance: 1500000, fee: 120000, rate: 23, term: 24, status: 'En cobro judicial', overdueFees: 5, daysInArrears: 130, expediente: '22-004567-1027-CA', creationDate: '2022-05-21', dueDate: '2024-05-21', deductingEntity: 'CoopeJudicial' },
     { operationNumber: 'CR-012', debtorName: 'Sebastián Soto', debtorId: '9-6666-7777', employer: 'Poder Judicial', type: 'Regular', amount: 2500000, balance: 2000000, fee: 150000, rate: 25, term: 24, status: 'En cobro judicial', overdueFees: 6, daysInArrears: 190, expediente: '22-008899-1027-CA', creationDate: '2022-04-01', dueDate: '2024-04-01', deductingEntity: 'CoopeJudicial' },
     { operationNumber: 'CR-013', debtorName: 'Valentina Rossi', debtorId: '4-1111-2222', employer: 'Ministerio de Hacienda', type: 'Regular', amount: 3000000, balance: 2800000, fee: 180000, rate: 26, term: 36, status: 'En cobro judicial', overdueFees: 7, daysInArrears: 220, expediente: '22-009911-1027-CA', creationDate: '2022-02-15', dueDate: '2025-02-15', deductingEntity: 'CoopeJudicial' },
+    { operationNumber: 'CR-014', debtorName: 'John Doe', debtorId: '6-4444-5555', employer: 'Ministerio de Hacienda', type: 'Regular', amount: 4000000, balance: 3500000, fee: 200000, rate: 21, term: 36, status: 'En cobro judicial', overdueFees: 4, daysInArrears: 110, expediente: '23-001122-1027-CA', creationDate: '2023-01-05', dueDate: '2026-01-05', deductingEntity: 'CoopeJudicial' },
+    { operationNumber: 'CR-015', debtorName: 'Jane Smith', debtorId: '7-5555-6666', employer: 'Ministerio de Educación Pública', type: 'Regular', amount: 1500000, balance: 1300000, fee: 80000, rate: 22, term: 24, status: 'En cobro judicial', overdueFees: 5, daysInArrears: 140, expediente: '23-003344-1027-CA', creationDate: '2022-11-20', dueDate: '2024-11-20', deductingEntity: 'CoopeAnde' },
     { operationNumber: 'MC-001', debtorName: 'Camila Gómez', debtorId: '6-3333-4444', employer: 'Ministerio de Educación Pública', type: 'Micro-crédito', amount: 500000, balance: 300000, fee: 50000, rate: 24, term: 12, status: 'Al día', overdueFees: 0, daysInArrears: 0, creationDate: '2023-08-17', dueDate: '2024-08-17', deductingEntity: 'CoopeAnde' },
     { operationNumber: 'MC-002', debtorName: 'Mateo Díaz', debtorId: '7-4444-5555', employer: 'Caja Costarricense de Seguro Social', type: 'Micro-crédito', amount: 650000, balance: 200000, fee: 65000, rate: 25, term: 12, status: 'Al día', overdueFees: 0, daysInArrears: 0, creationDate: '2023-09-18', dueDate: '2024-09-18', deductingEntity: 'CS Magisterio' },
     { operationNumber: 'MC-003', debtorName: 'Sebastián Soto', debtorId: '9-6666-7777', employer: 'Poder Judicial', type: 'Micro-crédito', amount: 400000, balance: 400000, fee: 45000, rate: 26, term: 12, status: 'En mora', overdueFees: 1, daysInArrears: 30, creationDate: '2023-10-20', dueDate: '2024-10-20', deductingEntity: 'CoopeJudicial' },
@@ -318,3 +329,13 @@ export const cases: Case[] = [
     {id: "23-015900-1027-CA", title: "Amparo por Silencio Positivo vs. MEP", clientName: "Luis Hernández", specialty: "Derecho Administrativo", status: "Sentencia", assignedTo: "Lic. Freddy Bravo Chacón", lastUpdate: "2023-11-10", category: 'Contenciosa', opportunityLifecycle: 100},
     {id: "23-015901-1027-CA", title: "Ejecución de Sentencia", clientName: "Sofía Torres", specialty: "Derecho Constitucional", status: "Con lugar sin costas", assignedTo: "Lic. Raizza Mildrey Arocena", lastUpdate: "2023-11-09", category: 'No Contenciosa', opportunityLifecycle: 90, amparoId: '20-005678-1027-CA'}
 ];
+
+export const payments: Payment[] = [
+    { id: 'PAY001', operationNumber: 'CR-001', debtorName: 'John Doe', paymentDate: '2023-11-01', amount: 150000, source: 'Planilla' },
+    { id: 'PAY002', operationNumber: 'CR-005', debtorName: 'Lucía Méndez', paymentDate: '2023-11-01', amount: 200000, source: 'Planilla' },
+    { id: 'PAY003', operationNumber: 'CR-006', debtorName: 'Carlos Fernández', paymentDate: '2023-11-02', amount: 60000, source: 'Planilla' },
+    { id: 'PAY004', operationNumber: 'MC-001', debtorName: 'Camila Gómez', paymentDate: '2023-11-05', amount: 50000, source: 'Ventanilla' },
+    { id: 'PAY005', operationNumber: 'CR-002', debtorName: 'Ana Silva Rojas', paymentDate: '2023-11-06', amount: 75000, source: 'Transferencia' },
+];
+
+    

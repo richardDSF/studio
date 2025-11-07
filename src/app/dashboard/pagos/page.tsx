@@ -5,22 +5,96 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Upload, PlusCircle, Receipt } from 'lucide-react';
+import { payments, Payment } from '@/lib/data';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+
+const getSourceVariant = (source: Payment['source']) => {
+    switch (source) {
+        case 'Planilla': return 'secondary';
+        case 'Ventanilla': return 'outline';
+        case 'Transferencia': return 'default';
+        default: return 'outline';
+    }
+};
+
 
 export default function PagosPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Gestión de Pagos</CardTitle>
-        <CardDescription>
-          Aplica pagos individuales o masivos desde planillas.
-        </CardDescription>
+        <div className="flex items-center justify-between">
+            <div>
+                <CardTitle>Gestión de Pagos</CardTitle>
+                <CardDescription>
+                Aplica pagos individuales o masivos desde planillas y visualiza el historial.
+                </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+                <Button variant="outline">
+                    <Upload className="mr-2 h-4 w-4" />
+                    Cargar Planilla
+                </Button>
+                <Button>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Registrar Pago
+                </Button>
+            </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <p>
-          Este módulo permitirá registrar pagos, ya sea de forma individual o
-          cargando archivos CSV, XLSX o PDF de las deductoras.
-        </p>
+        <Table>
+            <TableHeader>
+                <TableRow>
+                    <TableHead>Operación</TableHead>
+                    <TableHead>Deudor</TableHead>
+                    <TableHead className="text-right">Monto Pagado</TableHead>
+                    <TableHead>Fecha de Pago</TableHead>
+                    <TableHead>Fuente</TableHead>
+                    <TableHead>
+                        <span className="sr-only">Acciones</span>
+                    </TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {payments.map((payment) => (
+                    <TableRow key={payment.id}>
+                        <TableCell className="font-medium">
+                            <Link href={`/dashboard/creditos/${payment.operationNumber}`} className="hover:underline">
+                                {payment.operationNumber}
+                            </Link>
+                        </TableCell>
+                        <TableCell>{payment.debtorName}</TableCell>
+                        <TableCell className="text-right font-mono">
+                            ₡{payment.amount.toLocaleString('es-CR')}
+                        </TableCell>
+                        <TableCell>{payment.paymentDate}</TableCell>
+                        <TableCell>
+                            <Badge variant={getSourceVariant(payment.source)}>{payment.source}</Badge>
+                        </TableCell>
+                         <TableCell className="text-right">
+                            <Button variant="ghost" size="icon">
+                                <Receipt className="h-4 w-4" />
+                                <span className="sr-only">Ver Recibo</span>
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
 }
+
+    
