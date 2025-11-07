@@ -21,7 +21,6 @@ import {
   Calculator,
   Gavel,
   Banknote,
-  LineChart,
 } from 'lucide-react';
 
 const navItems = [
@@ -40,7 +39,6 @@ const navItems = [
   { href: '/dashboard/tareas', icon: ClipboardCheck, label: 'TAREAS' },
   { href: '/dashboard/comunicaciones', icon: MessageSquare, label: 'COMUNICACIONES' },
   { href: '/dashboard/staff', icon: Briefcase, label: 'COLABORADORES' },
-  { href: '/dashboard/reportes', icon: LineChart, label: 'REPORTES' },
 ];
 
 export function DashboardNav() {
