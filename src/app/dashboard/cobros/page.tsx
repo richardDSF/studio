@@ -75,6 +75,9 @@ const mas180 = filterCreditsByArrears(181);
  * Componente que renderiza la tabla de créditos para la gestión de cobros.
  */
 const CobrosTable = React.memo(function CobrosTable({ credits }: { credits: Credit[] }) {
+  if (credits.length === 0) {
+    return <div className="p-4 text-center text-sm text-muted-foreground">No hay créditos en esta categoría.</div>
+  }
   return (
     <div className="relative w-full overflow-auto">
       <Table>
@@ -198,97 +201,99 @@ const PaymentTableRow = React.memo(function PaymentTableRow({ payment }: { payme
  */
 export default function CobrosPage() {
   return (
-    <Tabs defaultValue="gestion">
-      <CardHeader>
+    <div className="space-y-6">
+       <CardHeader className="px-0">
         <CardTitle>Módulo de Cobros</CardTitle>
         <CardDescription>
           Administra los créditos en mora y visualiza el historial de abonos.
         </CardDescription>
       </CardHeader>
-      <div className="px-6">
+      <Tabs defaultValue="gestion" className="w-full">
         <TabsList>
           <TabsTrigger value="gestion">Gestión de Cobros</TabsTrigger>
           <TabsTrigger value="abonos">Historial de Abonos</TabsTrigger>
         </TabsList>
-      </div>
 
-      <TabsContent value="gestion">
-        <Card>
-            <CardHeader className="pt-4">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
-                    <TabsTrigger value="al-dia">Al día ({alDiaCredits.length})</TabsTrigger>
-                    <TabsTrigger value="30-dias">30 días ({mora30.length})</TabsTrigger>
-                    <TabsTrigger value="60-dias">60 días ({mora60.length})</TabsTrigger>
-                    <TabsTrigger value="90-dias">90 días ({mora90.length})</TabsTrigger>
-                    <TabsTrigger value="180-dias">180 días ({mora180.length})</TabsTrigger>
-                    <TabsTrigger value="mas-180-dias">+180 días ({mas180.length})</TabsTrigger>
-                </TabsList>
-            </CardHeader>
-            <TabsContent value="al-dia">
-                <CardContent className="pt-0"><CobrosTable credits={alDiaCredits} /></CardContent>
-            </TabsContent>
-            <TabsContent value="30-dias">
-                <CardContent className="pt-0"><CobrosTable credits={mora30} /></CardContent>
-            </TabsContent>
-            <TabsContent value="60-dias">
-                <CardContent className="pt-0"><CobrosTable credits={mora60} /></CardContent>
-            </TabsContent>
-            <TabsContent value="90-dias">
-                <CardContent className="pt-0"><CobrosTable credits={mora90} /></CardContent>
-            </TabsContent>
-            <TabsContent value="180-dias">
-                <CardContent className="pt-0"><CobrosTable credits={mora180} /></CardContent>
-            </TabsContent>
-            <TabsContent value="mas-180-dias">
-                <CardContent className="pt-0"><CobrosTable credits={mas180} /></CardContent>
-            </TabsContent>
-        </Card>
-      </TabsContent>
+        <TabsContent value="gestion">
+          <Tabs defaultValue="al-dia" className="w-full">
+            <Card>
+              <CardHeader className="pt-4">
+                  <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-6">
+                      <TabsTrigger value="al-dia">Al día ({alDiaCredits.length})</TabsTrigger>
+                      <TabsTrigger value="30-dias">30 días ({mora30.length})</TabsTrigger>
+                      <TabsTrigger value="60-dias">60 días ({mora60.length})</TabsTrigger>
+                      <TabsTrigger value="90-dias">90 días ({mora90.length})</TabsTrigger>
+                      <TabsTrigger value="180-dias">180 días ({mora180.length})</TabsTrigger>
+                      <TabsTrigger value="mas-180-dias">+180 días ({mas180.length})</TabsTrigger>
+                  </TabsList>
+              </CardHeader>
+              <TabsContent value="al-dia">
+                  <CardContent className="pt-0"><CobrosTable credits={alDiaCredits} /></CardContent>
+              </TabsContent>
+              <TabsContent value="30-dias">
+                  <CardContent className="pt-0"><CobrosTable credits={mora30} /></CardContent>
+              </TabsContent>
+              <TabsContent value="60-dias">
+                  <CardContent className="pt-0"><CobrosTable credits={mora60} /></CardContent>
+              </TabsContent>
+              <TabsContent value="90-dias">
+                  <CardContent className="pt-0"><CobrosTable credits={mora90} /></CardContent>
+              </TabsContent>
+              <TabsContent value="180-dias">
+                  <CardContent className="pt-0"><CobrosTable credits={mora180} /></CardContent>
+              </TabsContent>
+              <TabsContent value="mas-180-dias">
+                  <CardContent className="pt-0"><CobrosTable credits={mas180} /></CardContent>
+              </TabsContent>
+            </Card>
+          </Tabs>
+        </TabsContent>
 
-      <TabsContent value="abonos">
-        <Card>
-            <CardHeader className="pt-4">
-                <div className="flex items-center justify-between">
-                    <div>
-                        <CardTitle>Historial de Abonos Recibidos</CardTitle>
-                        <CardDescription>
-                        Aplica abonos individuales o masivos y visualiza el historial.
-                        </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button variant="outline">
-                            <Upload className="mr-2 h-4 w-4" />
-                            Cargar Planilla
-                        </Button>
-                        <Button>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Registrar Abono
-                        </Button>
-                    </div>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>Operación</TableHead>
-                            <TableHead>Deudor</TableHead>
-                            <TableHead className="text-right">Monto Pagado</TableHead>
-                            <TableHead className="text-right">Diferencia</TableHead>
-                            <TableHead>Fecha de Pago</TableHead>
-                            <TableHead>Fuente</TableHead>
-                            <TableHead><span className="sr-only">Acciones</span></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {payments.map((payment) => (
-                            <PaymentTableRow key={payment.id} payment={payment} />
-                        ))}
-                    </TableBody>
-                </Table>
-            </CardContent>
-        </Card>
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="abonos">
+          <Card>
+              <CardHeader className="pt-4">
+                  <div className="flex items-center justify-between">
+                      <div>
+                          <CardTitle>Historial de Abonos Recibidos</CardTitle>
+                          <CardDescription>
+                          Aplica abonos individuales o masivos y visualiza el historial.
+                          </CardDescription>
+                      </div>
+                      <div className="flex items-center gap-2">
+                          <Button variant="outline">
+                              <Upload className="mr-2 h-4 w-4" />
+                              Cargar Planilla
+                          </Button>
+                          <Button>
+                              <PlusCircle className="mr-2 h-4 w-4" />
+                              Registrar Abono
+                          </Button>
+                      </div>
+                  </div>
+              </CardHeader>
+              <CardContent>
+                  <Table>
+                      <TableHeader>
+                          <TableRow>
+                              <TableHead>Operación</TableHead>
+                              <TableHead>Deudor</TableHead>
+                              <TableHead className="text-right">Monto Pagado</TableHead>
+                              <TableHead className="text-right">Diferencia</TableHead>
+                              <TableHead>Fecha de Pago</TableHead>
+                              <TableHead>Fuente</TableHead>
+                              <TableHead><span className="sr-only">Acciones</span></TableHead>
+                          </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                          {payments.map((payment) => (
+                              <PaymentTableRow key={payment.id} payment={payment} />
+                          ))}
+                      </TableBody>
+                  </Table>
+              </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
 }
