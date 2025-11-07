@@ -29,6 +29,7 @@ import { credits, Credit, leads, Lead, creditConfigs } from '@/lib/data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from '@/components/ui/separator';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 /**
  * Componente principal de la página de Cálculos.
@@ -176,16 +177,22 @@ export default function CalculosPage() {
         <CardContent className="space-y-4">
            {/* Selector para el tipo de crédito */}
           <div className="space-y-2">
-            <Label htmlFor="credit-type">Tipo de Crédito</Label>
-            <Select value={creditType} onValueChange={(value) => setCreditType(value as 'regular' | 'micro')}>
-              <SelectTrigger id="credit-type">
-                <SelectValue placeholder="Selecciona un tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="regular">Crédito Regular</SelectItem>
-                <SelectItem value="micro">Micro-crédito</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label>Tipo de Crédito</Label>
+            <RadioGroup
+              defaultValue="regular"
+              className="flex gap-4 pt-2"
+              onValueChange={(value) => setCreditType(value as 'regular' | 'micro')}
+              value={creditType}
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="regular" id="r1" />
+                <Label htmlFor="r1">Crédito Regular</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="micro" id="r2" />
+                <Label htmlFor="r2">Micro-crédito</Label>
+              </div>
+            </RadioGroup>
           </div>
           {/* Campo para el monto del préstamo */}
           <div className="space-y-2">
