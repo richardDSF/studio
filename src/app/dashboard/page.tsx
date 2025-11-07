@@ -7,6 +7,7 @@ import {
   YAxis,
   CartesianGrid,
 } from 'recharts';
+import Link from 'next/link';
 import {
   Card,
   CardContent,
@@ -54,54 +55,62 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Saldo de Cartera</CardTitle>
-            <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              ₡{totalBalance.toLocaleString('es-CR')}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              +2.5% desde el mes pasado
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Créditos Activos</CardTitle>
-            <Landmark className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {credits.filter((c) => c.status !== 'Cancelado').length}
-            </div>
-            <p className="text-xs text-muted-foreground">+5 nuevos esta semana</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Nuevas Oportunidades</CardTitle>
-            <Handshake className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{opportunities.length}</div>
-            <p className="text-xs text-muted-foreground">+10 este mes</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Clientes Totales</CardTitle>
-            <UserCheck className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {clients.length}
-            </div>
-            <p className="text-xs text-muted-foreground">Total de clientes históricos</p>
-          </CardContent>
-        </Card>
+        <Link href="/dashboard/creditos">
+            <Card className="transition-all hover:ring-2 hover:ring-primary/50">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Saldo de Cartera</CardTitle>
+                    <CircleDollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">
+                    ₡{totalBalance.toLocaleString('es-CR')}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                    +2.5% desde el mes pasado
+                    </p>
+                </CardContent>
+            </Card>
+        </Link>
+        <Link href="/dashboard/creditos">
+            <Card className="transition-all hover:ring-2 hover:ring-primary/50">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Créditos Activos</CardTitle>
+                    <Landmark className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">
+                    {credits.filter((c) => c.status !== 'Cancelado').length}
+                    </div>
+                    <p className="text-xs text-muted-foreground">+5 nuevos esta semana</p>
+                </CardContent>
+            </Card>
+        </Link>
+        <Link href="/dashboard/oportunidades">
+            <Card className="transition-all hover:ring-2 hover:ring-primary/50">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Nuevas Oportunidades</CardTitle>
+                    <Handshake className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">{opportunities.length}</div>
+                    <p className="text-xs text-muted-foreground">+10 este mes</p>
+                </CardContent>
+            </Card>
+        </Link>
+        <Link href="/dashboard/clientes">
+            <Card className="transition-all hover:ring-2 hover:ring-primary/50">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Clientes Totales</CardTitle>
+                    <UserCheck className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                    <div className="text-2xl font-bold">
+                    {clients.length}
+                    </div>
+                    <p className="text-xs text-muted-foreground">Total de clientes históricos</p>
+                </CardContent>
+            </Card>
+        </Link>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
