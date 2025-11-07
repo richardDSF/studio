@@ -22,7 +22,7 @@ import {
   Activity,
   CircleDollarSign,
 } from 'lucide-react';
-import { credits, notifications, users, opportunities } from '@/lib/data';
+import { credits, notifications, clients, opportunities } from '@/lib/data';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   ChartContainer,
@@ -97,7 +97,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {users.filter(u => u.status === 'Cliente').length}
+              {clients.length}
             </div>
             <p className="text-xs text-muted-foreground">Total de clientes históricos</p>
           </CardContent>
