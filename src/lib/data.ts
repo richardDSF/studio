@@ -20,6 +20,7 @@ export type Lead = {
   antiguedad: string;
   salarioBase: number;
   salarioNeto: number;
+  assignedTo: string;
 };
 
 export type Client = {
@@ -198,6 +199,24 @@ export type Deductora = {
   commission: number;
 };
 
+export type SalesVisit = {
+  id: string;
+  institution: string;
+  salesperson: string;
+  date: string;
+  status: 'Planificada' | 'Completada' | 'Cancelada';
+};
+
+export type SalesGoal = {
+  id: string;
+  salespersonId: string;
+  salespersonName: string;
+  salespersonAvatar: string;
+  month: string;
+  goalAmount: number;
+  achievedAmount: number;
+};
+
 
 export const users: User[] = [
     { id: 'STF001', name: 'Jorge Ortiz Solís', email: 'jorge@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff1/40/40' },
@@ -210,10 +229,10 @@ export const users: User[] = [
 export const staff = users;
 
 export const leads: Lead[] = [
-    { id: 'LEAD001', name: 'Carla Díaz Solano', cedula: '3-1111-2222', email: 'carla.dias@example.com', phone: '7555-4444', registeredOn: '2023-10-27', avatarUrl: 'https://picsum.photos/seed/avatar3/40/40', juicios: 1, manchas: 2, puesto: 'Interino', antiguedad: '2 años', salarioBase: 650000, salarioNeto: 520000 },
-    { id: 'LEAD002', name: 'Daniel Alves Mora', cedula: '4-2222-3333', email: 'daniel.alves@example.com', phone: '5432-1876', registeredOn: '2023-10-24', avatarUrl: 'https://picsum.photos/seed/avatar4/40/40', juicios: 0, manchas: 0, puesto: 'En Propiedad', antiguedad: '10 años', salarioBase: 1200000, salarioNeto: 950000 },
-    { id: 'LEAD003', name: 'Eduardo Pereira', cedula: '9-0123-4567', email: 'eduardo.p@example.com', phone: '8123-9876', registeredOn: '2023-11-05', avatarUrl: 'https://picsum.photos/seed/avatar6/40/40', juicios: 0, manchas: 1, puesto: 'En Propiedad', antiguedad: '8 años', salarioBase: 980000, salarioNeto: 780000 },
-    { id: 'LEAD004', name: 'Fernanda Núñez', cedula: '1-2345-6789', email: 'fernanda.n@example.com', phone: '7890-1234', registeredOn: '2023-11-06', avatarUrl: 'https://picsum.photos/seed/avatar7/40/40', juicios: 2, manchas: 3, puesto: 'Interino', antiguedad: '6 meses', salarioBase: 450000, salarioNeto: 380000 },
+    { id: 'LEAD001', name: 'Carla Díaz Solano', cedula: '3-1111-2222', email: 'carla.dias@example.com', phone: '7555-4444', registeredOn: '2023-10-27', avatarUrl: 'https://picsum.photos/seed/avatar3/40/40', juicios: 1, manchas: 2, puesto: 'Interino', antiguedad: '2 años', salarioBase: 650000, salarioNeto: 520000, assignedTo: 'Oficina' },
+    { id: 'LEAD002', name: 'Daniel Alves Mora', cedula: '4-2222-3333', email: 'daniel.alves@example.com', phone: '5432-1876', registeredOn: '2023-10-24', avatarUrl: 'https://picsum.photos/seed/avatar4/40/40', juicios: 0, manchas: 0, puesto: 'En Propiedad', antiguedad: '10 años', salarioBase: 1200000, salarioNeto: 950000, assignedTo: 'Jorge Ortiz Solís' },
+    { id: 'LEAD003', name: 'Eduardo Pereira', cedula: '9-0123-4567', email: 'eduardo.p@example.com', phone: '8123-9876', registeredOn: '2023-11-05', avatarUrl: 'https://picsum.photos/seed/avatar6/40/40', juicios: 0, manchas: 1, puesto: 'En Propiedad', antiguedad: '8 años', salarioBase: 980000, salarioNeto: 780000, assignedTo: 'Oficina' },
+    { id: 'LEAD004', name: 'Fernanda Núñez', cedula: '1-2345-6789', email: 'fernanda.n@example.com', phone: '7890-1234', registeredOn: '2023-11-06', avatarUrl: 'https://picsum.photos/seed/avatar7/40/40', juicios: 2, manchas: 3, puesto: 'Interino', antiguedad: '6 meses', salarioBase: 450000, salarioNeto: 380000, assignedTo: 'Raizza Mildrey Arocena' },
 ];
 
 export const clients: Client[] = [
@@ -390,4 +409,15 @@ export const deductoras: Deductora[] = [
   { id: 'DED003', name: 'Coope Ande #5', paymentDate: 'Quincenal (14 y 29)', commission: 1.25 },
   { id: 'DED004', name: 'CS Magisterio', paymentDate: 'Quincenal (12 y 27)', commission: 2.0 },
   { id: 'DED005', name: 'CoopeJudicial', paymentDate: 'Mensual (día 22)', commission: 1.0 },
+];
+
+export const salesVisits: SalesVisit[] = [
+  { id: 'VIS001', institution: 'Ministerio de Educación Pública', salesperson: 'Jorge Ortiz Solís', date: '2023-11-20', status: 'Planificada' },
+  { id: 'VIS002', institution: 'Caja Costarricense de Seguro Social', salesperson: 'Raizza Mildrey Arocena', date: '2023-11-22', status: 'Planificada' },
+  { id: 'VIS003', institution: 'Poder Judicial', salesperson: 'Jorge Ortiz Solís', date: '2023-11-24', status: 'Planificada' },
+];
+
+export const salesGoals: SalesGoal[] = [
+  { id: 'GOAL01', salespersonId: 'STF001', salespersonName: 'Jorge Ortiz Solís', salespersonAvatar: 'https://picsum.photos/seed/staff1/40/40', month: 'Noviembre 2023', goalAmount: 50000000, achievedAmount: 22000000 },
+  { id: 'GOAL02', salespersonId: 'STF002', salespersonName: 'Raizza Mildrey Arocena', salespersonAvatar: 'https://picsum.photos/seed/staff2/40/40', month: 'Noviembre 2023', goalAmount: 40000000, achievedAmount: 31000000 },
 ];

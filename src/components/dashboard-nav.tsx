@@ -21,10 +21,12 @@ import {
   Calculator,
   Gavel,
   Banknote,
+  DollarSign,
 } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', icon: LayoutDashboard, label: 'REPORTES' },
+  { href: '/dashboard/ventas', icon: DollarSign, label: 'VENTAS' },
   { href: '/dashboard/leads', icon: Handshake, label: 'LEADS' },
   { href: '/dashboard/oportunidades', icon: Users, label: 'OPORTUNIDADES' },
   { href: '/dashboard/analisis', icon: FileSearch, label: 'ANÁLISIS' },
