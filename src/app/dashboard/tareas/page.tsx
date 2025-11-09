@@ -90,6 +90,9 @@ export default function ProjectsPage() {
  * Componente reutilizable para mostrar la tabla de proyectos.
  */
 function ProjectsTable({ projects }: { projects: Project[] }) {
+  // Ordenamos los proyectos por ID para evitar errores de hidratación.
+  const sortedProjects = [...projects].sort((a, b) => a.id.localeCompare(b.id));
+
   return (
     <div className="relative w-full overflow-auto">
       <Table>
@@ -107,7 +110,7 @@ function ProjectsTable({ projects }: { projects: Project[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {projects.map((project) => (
+          {sortedProjects.map((project) => (
             <ProjectTableRow key={project.id} project={project} />
           ))}
         </TableBody>
