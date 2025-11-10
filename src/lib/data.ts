@@ -3,6 +3,7 @@
 
 
 
+
 export type User = {
   id: string;
   name: string;
@@ -394,13 +395,11 @@ export const creditConfigs = {
 
 
 export const users: User[] = [
-    { id: 'STF001', name: 'Jorge Ortiz Solís', email: 'jorge@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff1/40/40' },
-    { id: 'STF002', name: 'Raizza Mildrey Arocena', email: 'raizza@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff2/40/40' },
-    { id: 'STF003', name: 'Freddy Bravo Chacón', email: 'freddy@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff3/40/40' },
-    { id: 'STF004', name: 'Richard Milán Vargas', email: 'richard@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff4/40/40' },
-    { id: 'STF005', name: 'Carolina Chavarría Arley', email: 'carolina@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff5/40/40' },
-    { id: 'STF006', name: 'Leonardo Gómez', email: 'leonardo@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff6/40/40' },
-    { id: 'STF007', name: 'Ahixel Rojas', email: 'ahixel@crepipep.com', avatarUrl: 'https://picsum.photos/seed/staff7/40/40' },
+    { id: 'STF001', name: 'Carlos Mendez', email: 'carlosm@pep.cr', avatarUrl: 'https://picsum.photos/seed/staff1/40/40' },
+    { id: 'STF002', name: 'Wilmer Marquez', email: 'coder@gomez.cr', avatarUrl: 'https://picsum.photos/seed/staff2/40/40' },
+    { id: 'STF003', name: 'Ahixel Rojas', email: 'ahixel@pep.cr', avatarUrl: 'https://picsum.photos/seed/staff3/40/40' },
+    { id: 'STF004', name: 'Daniel Gómez', email: 'daniel@gomez.cr', avatarUrl: 'https://picsum.photos/seed/staff4/40/40' },
+    { id: 'STF005', name: 'Leonardo Gómez', email: 'leonardo@gomez.cr', avatarUrl: 'https://picsum.photos/seed/staff5/40/40' },
 ];
 
 export const staff = users;
@@ -435,9 +434,9 @@ export const branches: Branch[] = [
 
 export const leads: Lead[] = [
     { id: 'LEAD001', name: 'Carla Díaz Solano', cedula: '3-1111-2222', email: 'carla.dias@example.com', phone: '7555-4444', registeredOn: '2023-10-27', avatarUrl: 'https://picsum.photos/seed/avatar3/40/40', juicios: 1, manchas: 2, puesto: 'Interino', antiguedad: '2 años', salarioBase: 650000, salarioNeto: 520000, assignedTo: 'Oficina' },
-    { id: 'LEAD002', name: 'Daniel Alves Mora', cedula: '4-2222-3333', email: 'daniel.alves@example.com', phone: '5432-1876', registeredOn: '2023-10-24', avatarUrl: 'https://picsum.photos/seed/avatar4/40/40', juicios: 0, manchas: 0, puesto: 'En Propiedad', antiguedad: '10 años', salarioBase: 1200000, salarioNeto: 950000, assignedTo: 'Jorge Ortiz Solís' },
+    { id: 'LEAD002', name: 'Daniel Alves Mora', cedula: '4-2222-3333', email: 'daniel.alves@example.com', phone: '5432-1876', registeredOn: '2023-10-24', avatarUrl: 'https://picsum.photos/seed/avatar4/40/40', juicios: 0, manchas: 0, puesto: 'En Propiedad', antiguedad: '10 años', salarioBase: 1200000, salarioNeto: 950000, assignedTo: 'Carlos Mendez' },
     { id: 'LEAD003', name: 'Eduardo Pereira', cedula: '9-0123-4567', email: 'eduardo.p@example.com', phone: '8123-9876', registeredOn: '2023-11-05', avatarUrl: 'https://picsum.photos/seed/avatar6/40/40', juicios: 0, manchas: 1, puesto: 'En Propiedad', antiguedad: '8 años', salarioBase: 980000, salarioNeto: 780000, assignedTo: 'Oficina' },
-    { id: 'LEAD004', name: 'Fernanda Núñez', cedula: '1-2345-6789', email: 'fernanda.n@example.com', phone: '7890-1234', registeredOn: '2023-11-06', avatarUrl: 'https://picsum.photos/seed/avatar7/40/40', juicios: 2, manchas: 3, puesto: 'Interino', antiguedad: '6 meses', salarioBase: 450000, salarioNeto: 380000, assignedTo: 'Raizza Mildrey Arocena' },
+    { id: 'LEAD004', name: 'Fernanda Núñez', cedula: '1-2345-6789', email: 'fernanda.n@example.com', phone: '7890-1234', registeredOn: '2023-11-06', avatarUrl: 'https://picsum.photos/seed/avatar7/40/40', juicios: 2, manchas: 3, puesto: 'Interino', antiguedad: '6 meses', salarioBase: 450000, salarioNeto: 380000, assignedTo: 'Wilmer Marquez' },
 ];
 
 export const clients: Client[] = [
@@ -466,10 +465,10 @@ export const investors: Investor[] = [
 ];
 
 export const opportunities: Opportunity[] = [
-    { id: 'OPP001', leadCedula: '2-0987-6543', creditType: 'Regular', amount: 5000000, status: 'En proceso', startDate: '2023-11-01', assignedTo: 'Raizza Mildrey Arocena' },
-    { id: 'OPP002', leadCedula: '5-3333-4444', creditType: 'Micro-crédito', amount: 500000, status: 'Convertido', startDate: '2023-11-02', assignedTo: 'Jorge Ortiz Solís' },
-    { id: 'OPP003', leadCedula: '3-1111-2222', creditType: 'Regular', amount: 2000000, status: 'Rechazada', startDate: '2023-11-03', assignedTo: 'Raizza Mildrey Arocena' },
-    { id: 'OPP004', leadCedula: '4-2222-3333', creditType: 'Regular', amount: 7000000, status: 'Aceptada', startDate: '2023-11-04', assignedTo: 'Jorge Ortiz Solís' },
+    { id: 'OPP001', leadCedula: '2-0987-6543', creditType: 'Regular', amount: 5000000, status: 'En proceso', startDate: '2023-11-01', assignedTo: 'Wilmer Marquez' },
+    { id: 'OPP002', leadCedula: '5-3333-4444', creditType: 'Micro-crédito', amount: 500000, status: 'Convertido', startDate: '2023-11-02', assignedTo: 'Carlos Mendez' },
+    { id: 'OPP003', leadCedula: '3-1111-2222', creditType: 'Regular', amount: 2000000, status: 'Rechazada', startDate: '2023-11-03', assignedTo: 'Wilmer Marquez' },
+    { id: 'OPP004', leadCedula: '4-2222-3333', creditType: 'Regular', amount: 7000000, status: 'Aceptada', startDate: '2023-11-04', assignedTo: 'Carlos Mendez' },
 ];
 
 export const credits: Credit[] = [
@@ -510,8 +509,8 @@ export const notifications = [
 ];
 
 export const couriers: Courier[] = [
-  { id: 'COUR01', name: 'Carlos Jimenez', phone: '8888-1111', vehicle: 'Motocicleta' },
-  { id: 'COUR02', name: 'Luisa Fernandez', phone: '8888-2222', vehicle: 'Automóvil' },
+  { id: 'COUR01', name: 'Carlos Jimenez', vehicle: 'Motocicleta' },
+  { id: 'COUR02', name: 'Luisa Fernandez', vehicle: 'Automóvil' },
 ];
 
 export const pendingPickups: PendingPickup[] = [
@@ -543,40 +542,40 @@ export const conversations: Conversation[] = [
 ];
 
 export const chatMessages: ChatMessage[] = [
-  { id: 'MSG01', conversationId: 'CR-002', senderType: 'agent', senderName: 'Raizza Mildrey Arocena', avatarUrl: 'https://picsum.photos/seed/staff2/40/40', text: 'Buenos días Sra. Ana, le escribimos para recordarle que su crédito presenta una mora de 25 días.', time: '10:05 AM' },
+  { id: 'MSG01', conversationId: 'CR-002', senderType: 'agent', senderName: 'Wilmer Marquez', avatarUrl: 'https://picsum.photos/seed/staff2/40/40', text: 'Buenos días Sra. Ana, le escribimos para recordarle que su crédito presenta una mora de 25 días.', time: '10:05 AM' },
   { id: 'MSG02', conversationId: 'CR-002', senderType: 'client', senderName: 'Ana Silva Rojas', avatarUrl: 'https://picsum.photos/seed/avatar1/40/40', text: 'Hola, no estaba enterada. Pensé que el pago era automático.', time: '10:10 AM' },
   { id: 'MSG03', conversationId: 'CR-002', senderType: 'client', senderName: 'Ana Silva Rojas', avatarUrl: 'https://picsum.photos/seed/avatar1/40/40', text: 'Entendido, ¿qué necesito para ponerme al día?', time: '10:15 AM' },
 ];
 
 export const internalNotes: InternalNote[] = [
-  { id: 'NOTE01', conversationId: 'CR-002', senderName: 'Raizza Mildrey Arocena', avatarUrl: 'https://picsum.photos/seed/staff2/40/40', text: 'Cliente parece anuente a pagar. Ofrecerle un arreglo de pago si lo solicita.', time: '10:12 AM' },
-  { id: 'NOTE02', conversationId: 'CR-001', senderName: 'Jorge Ortiz Solís', avatarUrl: 'https://picsum.photos/seed/staff1/40/40', text: 'Cliente consultó sobre adelanto de cuotas. Se le envió la información por correo.', time: 'Ayer' },
+  { id: 'NOTE01', conversationId: 'CR-002', senderName: 'Wilmer Marquez', avatarUrl: 'https://picsum.photos/seed/staff2/40/40', text: 'Cliente parece anuente a pagar. Ofrecerle un arreglo de pago si lo solicita.', time: '10:12 AM' },
+  { id: 'NOTE02', conversationId: 'CR-001', senderName: 'Carlos Mendez', avatarUrl: 'https://picsum.photos/seed/staff1/40/40', text: 'Cliente consultó sobre adelanto de cuotas. Se le envió la información por correo.', time: 'Ayer' },
 ];
 
 export const judicialNotifications: JudicialNotification[] = [
     { id: 'NOT001', expediente: '23-012345-1027-CA', acto: 'Notificación de demanda', fecha: '2023-11-20', status: 'Leída', asignadaA: 'Sistema' },
-    { id: 'NOT002', expediente: '21-001234-1027-CA', acto: 'Prevención', fecha: '2023-11-21', status: 'Pendiente', asignadaA: 'Freddy Bravo Chacón' },
+    { id: 'NOT002', expediente: '21-001234-1027-CA', acto: 'Prevención', fecha: '2023-11-21', status: 'Pendiente', asignadaA: 'Daniel Gómez' },
     { id: 'NOT003', expediente: '22-004567-1027-CA', acto: 'Resolución', fecha: '2023-11-19', status: 'Leída', asignadaA: 'Sistema' },
 ];
   
 export const undefinedNotifications: UndefinedNotification[] = [
-  { id: 'UNDEF001', subject: 'FW: Actualización de estado', receivedDate: '2023-11-22 14:30', assignedTo: 'Richard Milán Vargas' },
-  { id: 'UNDEF002', subject: 'Consulta Urgente', receivedDate: '2023-11-22 15:00', assignedTo: 'Richard Milán Vargas' },
+  { id: 'UNDEF001', subject: 'FW: Actualización de estado', receivedDate: '2023-11-22 14:30', assignedTo: 'Daniel Gómez' },
+  { id: 'UNDEF002', subject: 'Consulta Urgente', receivedDate: '2023-11-22 15:00', assignedTo: 'Daniel Gómez' },
 ];
 
 export const tasks: Task[] = [
-  { id: 'TSK001', title: 'Resolver prevención en expediente 21-001234-1027-CA', caseId: 'CR-004', assignedTo: 'Freddy Bravo Chacón', dueDate: '2023-11-23', priority: 'Alta', status: 'Pendiente' },
-  { id: 'TSK002', title: 'Contactar a Ana Silva para arreglo de pago', caseId: 'CR-002', assignedTo: 'Carolina Chavarría Arley', dueDate: '2023-11-25', priority: 'Media', status: 'En Progreso' },
-  { id: 'TSK003', title: 'Preparar documentos para nuevo crédito de Bruno Costa', caseId: 'OPP001', assignedTo: 'Richard Milán Vargas', dueDate: '2023-11-28', priority: 'Media', status: 'Pendiente' },
+  { id: 'TSK001', title: 'Resolver prevención en expediente 21-001234-1027-CA', caseId: 'CR-004', assignedTo: 'Daniel Gómez', dueDate: '2023-11-23', priority: 'Alta', status: 'Pendiente' },
+  { id: 'TSK002', title: 'Contactar a Ana Silva para arreglo de pago', caseId: 'CR-002', assignedTo: 'Ahixel Rojas', dueDate: '2023-11-25', priority: 'Media', status: 'En Progreso' },
+  { id: 'TSK003', title: 'Preparar documentos para nuevo crédito de Bruno Costa', caseId: 'OPP001', assignedTo: 'Daniel Gómez', dueDate: '2023-11-28', priority: 'Media', status: 'Pendiente' },
 ];
 
 export const cases: Case[] = [
-    {id: "23-015896-1027-CA", title: "Amparo de Legalidad vs. CCSS", clientName: "Juan Pérez", specialty: "Derecho Administrativo", status: "Presentado", assignedTo: "Lic. Freddy Bravo Chacón", lastUpdate: "2023-11-15", category: 'Contenciosa', opportunityLifecycle: 20},
-    {id: "23-015897-1027-CA", title: "Amparo de Legalidad vs. MEP", clientName: "Maria Rodriguez", specialty: "Derecho Administrativo", status: "Con curso", assignedTo: "Lic. Raizza Mildrey Arocena", lastUpdate: "2023-11-14", category: 'Contenciosa', opportunityLifecycle: 40},
-    {id: "23-015898-1027-CA", title: "Recurso de Amparo vs. CCSS", clientName: "Carlos Gómez", specialty: "Derecho Constitucional", status: "Rechazo de plano", assignedTo: "Lic. Jorge Ortiz Solís", lastUpdate: "2023-11-13", category: 'No Contenciosa', opportunityLifecycle: 10},
-    {id: "23-015899-1027-CA", title: "Ejecución de Sentencia", clientName: "Ana Fernandez", specialty: "Derecho Administrativo", status: "Con lugar con costas", assignedTo: "Lic. Richard Milán Vargas", lastUpdate: "2023-11-12", category: 'Contenciosa', opportunityLifecycle: 80, amparoId: '21-001234-1027-CA'},
-    {id: "23-015900-1027-CA", title: "Amparo por Silencio Positivo vs. MEP", clientName: "Luis Hernández", specialty: "Derecho Administrativo", status: "Sentencia", assignedTo: "Lic. Freddy Bravo Chacón", lastUpdate: "2023-11-10", category: 'Contenciosa', opportunityLifecycle: 100},
-    {id: "23-015901-1027-CA", title: "Ejecución de Sentencia", clientName: "Sofía Torres", specialty: "Derecho Constitucional", status: "Con lugar sin costas", assignedTo: "Lic. Raizza Mildrey Arocena", lastUpdate: "2023-11-09", category: 'No Contenciosa', opportunityLifecycle: 90, amparoId: '20-005678-1027-CA'}
+    {id: "23-015896-1027-CA", title: "Amparo de Legalidad vs. CCSS", clientName: "Juan Pérez", specialty: "Derecho Administrativo", status: "Presentado", assignedTo: "Lic. Daniel Gómez", lastUpdate: "2023-11-15", category: 'Contenciosa', opportunityLifecycle: 20},
+    {id: "23-015897-1027-CA", title: "Amparo de Legalidad vs. MEP", clientName: "Maria Rodriguez", specialty: "Derecho Administrativo", status: "Con curso", assignedTo: "Lic. Wilmer Marquez", lastUpdate: "2023-11-14", category: 'Contenciosa', opportunityLifecycle: 40},
+    {id: "23-015898-1027-CA", title: "Recurso de Amparo vs. CCSS", clientName: "Carlos Gómez", specialty: "Derecho Constitucional", status: "Rechazo de plano", assignedTo: "Lic. Carlos Mendez", lastUpdate: "2023-11-13", category: 'No Contenciosa', opportunityLifecycle: 10},
+    {id: "23-015899-1027-CA", title: "Ejecución de Sentencia", clientName: "Ana Fernandez", specialty: "Derecho Administrativo", status: "Con lugar con costas", assignedTo: "Lic. Daniel Gómez", lastUpdate: "2023-11-12", category: 'Contenciosa', opportunityLifecycle: 80, amparoId: '21-001234-1027-CA'},
+    {id: "23-015900-1027-CA", title: "Amparo por Silencio Positivo vs. MEP", clientName: "Luis Hernández", specialty: "Derecho Administrativo", status: "Sentencia", assignedTo: "Lic. Daniel Gómez", lastUpdate: "2023-11-10", category: 'Contenciosa', opportunityLifecycle: 100},
+    {id: "23-015901-1027-CA", title: "Ejecución de Sentencia", clientName: "Sofía Torres", specialty: "Derecho Constitucional", status: "Con lugar sin costas", assignedTo: "Lic. Wilmer Marquez", lastUpdate: "2023-11-09", category: 'No Contenciosa', opportunityLifecycle: 90, amparoId: '20-005678-1027-CA'}
 ];
 
 export const payments: Payment[] = [
@@ -619,14 +618,14 @@ export const deductoras: Deductora[] = [
 ];
 
 export const salesVisits: SalesVisit[] = [
-  { id: 'VIS001', institution: 'Ministerio de Educación Pública', salesperson: 'Jorge Ortiz Solís', date: '2023-11-20', status: 'Planificada' },
-  { id: 'VIS002', institution: 'Caja Costarricense de Seguro Social', salesperson: 'Raizza Mildrey Arocena', date: '2023-11-22', status: 'Planificada' },
-  { id: 'VIS003', institution: 'Poder Judicial', salesperson: 'Jorge Ortiz Solís', date: '2023-11-24', status: 'Planificada' },
+  { id: 'VIS001', institution: 'Ministerio de Educación Pública', salesperson: 'Carlos Mendez', date: '2023-11-20', status: 'Planificada' },
+  { id: 'VIS002', institution: 'Caja Costarricense de Seguro Social', salesperson: 'Wilmer Marquez', date: '2023-11-22', status: 'Planificada' },
+  { id: 'VIS003', institution: 'Poder Judicial', salesperson: 'Carlos Mendez', date: '2023-11-24', status: 'Planificada' },
 ];
 
 export const salesGoals: SalesGoal[] = [
-  { id: 'GOAL01', salespersonId: 'STF001', salespersonName: 'Jorge Ortiz Solís', salespersonAvatar: 'https://picsum.photos/seed/staff1/40/40', month: 'Noviembre 2023', goalAmount: 50000000, achievedAmount: 22000000 },
-  { id: 'GOAL02', salespersonId: 'STF002', salespersonName: 'Raizza Mildrey Arocena', salespersonAvatar: 'https://picsum.photos/seed/staff2/40/40', month: 'Noviembre 2023', goalAmount: 40000000, achievedAmount: 31000000 },
+  { id: 'GOAL01', salespersonId: 'STF001', salespersonName: 'Carlos Mendez', salespersonAvatar: 'https://picsum.photos/seed/staff1/40/40', month: 'Noviembre 2023', goalAmount: 50000000, achievedAmount: 22000000 },
+  { id: 'GOAL02', salespersonId: 'STF002', salespersonName: 'Wilmer Marquez', salespersonAvatar: 'https://picsum.photos/seed/staff2/40/40', month: 'Noviembre 2023', goalAmount: 40000000, achievedAmount: 31000000 },
 ];
 
 
