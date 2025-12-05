@@ -14,15 +14,36 @@ class Client extends Model
 
     protected $fillable = [
         'name',
+        'apellido1',
+        'apellido2',
         'cedula',
         'email',
         'phone',
-        'direccion1', // Ojo: Usamos el nombre real de la BD
+        'status',
+        'lead_status_id',
+        'assigned_to_id',
+        'person_type_id',
+        'whatsapp',
+        'tel_casa',
+        'tel_amigo',
         'province',
         'canton',
-        'user_id',
-        'assigned_agent_id',
-        'person_type_id'
+        'distrito',
+        'direccion1',
+        'direccion2',
+        'ocupacion',
+        'estado_civil',
+        'fecha_nacimiento',
+        'relacionado_a',
+        'tipo_relacion',
+        'is_active',
+        'notes',
+        'source'
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'fecha_nacimiento' => 'date',
     ];
 
     protected static function booted()
@@ -38,7 +59,7 @@ class Client extends Model
 
     public function assignedAgent()
     {
-        return $this->belongsTo(User::class, 'assigned_agent_id');
+        return $this->belongsTo(User::class, 'assigned_to_id');
     }
 
     // Relación con oportunidades (si aplica para clientes también)

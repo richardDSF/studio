@@ -4,29 +4,28 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Opportunity extends Model
 {
     use HasFactory;
 
-    // Configuración de Primary Key (Textual)
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    protected $table = 'opportunities';
 
     protected $fillable = [
-        'id',
         'lead_cedula',
-        'credit_type',
+        'opportunity_type',
+        'vertical',
         'amount',
         'status',
-        'start_date',
+        'expected_close_date',
+        'comments',
         'assigned_to_id'
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
-        'start_date' => 'date',
+        'expected_close_date' => 'date',
     ];
 
     // Relación con Lead (FK: lead_cedula -> persons.cedula)
@@ -35,8 +34,8 @@ class Opportunity extends Model
         return $this->belongsTo(Lead::class, 'lead_cedula', 'cedula');
     }
 
-    // Relación con Staff
-    public function staff()
+    // Relación con User (Agente asignado)
+    public function user()
     {
         return $this->belongsTo(User::class, 'assigned_to_id');
     }

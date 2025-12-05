@@ -15,14 +15,36 @@ class Lead extends Model
 
     protected $fillable = [
         'name',
+        'apellido1',
+        'apellido2',
         'cedula',
         'email',
         'phone',
         'status',
         'lead_status_id',
-        'assigned_agent_id',
-        'person_type_id', // Importante para el STI
-        // Agrega aquí otros campos si los necesitas (ej: direccion1, etc)
+        'assigned_to_id',
+        'person_type_id',
+        'whatsapp',
+        'tel_casa',
+        'tel_amigo',
+        'province',
+        'canton',
+        'distrito',
+        'direccion1',
+        'direccion2',
+        'ocupacion',
+        'estado_civil',
+        'fecha_nacimiento',
+        'relacionado_a',
+        'tipo_relacion',
+        'is_active',
+        'notes',
+        'source'
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'fecha_nacimiento' => 'date',
     ];
 
     /**
@@ -44,7 +66,7 @@ class Lead extends Model
     // Relaciones
     public function assignedAgent()
     {
-        return $this->belongsTo(User::class, 'assigned_agent_id');
+        return $this->belongsTo(User::class, 'assigned_to_id');
     }
 
     public function leadStatus()

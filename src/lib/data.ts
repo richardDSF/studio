@@ -7,40 +7,66 @@
 
 
 export type User = {
-  id: string;
+  id: string | number;
   name: string;
   email: string;
-  avatarUrl: string;
+  avatarUrl?: string;
 };
 
 export type Lead = {
-  id: string;
+  id: string | number;
   name: string;
   cedula: string;
   email: string;
   phone: string;
-  registeredOn: string;
-  avatarUrl: string;
-  juicios: number;
-  manchas: number;
-  lead_status_id: number;
-  puesto: 'Interino' | 'En Propiedad';
-  antiguedad: string;
-  salarioBase: number;
-  salarioNeto: number;
-  assignedTo: string;
+  whatsapp?: string;
+  province?: string;
+  canton?: string;
+  distrito?: string;
+  direccion1?: string;
+  direccion2?: string;
+  assigned_to_id?: number;
+  assigned_agent?: User;
+  is_active?: boolean | number;
+  created_at?: string;
+  lead_status_id?: number;
+  lead_status?: { id: number; name: string; color?: string };
+  
+  // Legacy / Optional fields for UI compatibility
+  registeredOn?: string;
+  avatarUrl?: string;
+  juicios?: number;
+  manchas?: number;
+  puesto?: 'Interino' | 'En Propiedad';
+  antiguedad?: string;
+  salarioBase?: number;
+  salarioNeto?: number;
+  assignedTo?: string;
 };
 
 export type Client = {
-    id: string;
+    id: string | number;
     name: string;
     cedula: string;
     email: string;
     phone: string;
+    whatsapp?: string;
+    province?: string;
+    canton?: string;
+    distrito?: string;
+    direccion1?: string;
+    direccion2?: string;
+    assigned_to_id?: number;
+    assigned_agent?: User;
+    is_active?: boolean | number;
+    status?: string; // Added to match backend
+    created_at?: string;
+
+    // Legacy / Optional fields
     clientStatus?: 'Activo' | 'Moroso' | 'En cobro' | 'Fallecido' | 'Inactivo';
-    activeCredits: number;
-    registeredOn: string;
-    avatarUrl: string;
+    activeCredits?: number;
+    registeredOn?: string;
+    avatarUrl?: string;
 };
 
 export type Investor = {
@@ -56,13 +82,24 @@ export type Investor = {
 };
 
 export type Opportunity = {
-  id: string;
-  leadCedula: string;
-  creditType: 'Regular' | 'Micro-crédito';
+  id: string | number;
+  lead_cedula: string;
+  opportunity_type?: string;
+  vertical?: string;
   amount: number;
-  status: 'En proceso' | 'Rechazada' | 'Aceptada' | 'Convertido';
-  startDate: string;
-  assignedTo: string;
+  status: string;
+  expected_close_date?: string;
+  comments?: string;
+  assigned_to_id?: number;
+  lead?: Lead;
+  user?: User;
+  created_at?: string;
+
+  // Legacy fields
+  leadCedula?: string;
+  creditType?: 'Regular' | 'Micro-crédito';
+  startDate?: string;
+  assignedTo?: string;
 };
 
 export type Credit = {
@@ -480,10 +517,10 @@ export const investors: Investor[] = [
 ];
 
 export const opportunities: Opportunity[] = [
-    { id: 'OPP001', leadCedula: '2-0987-6543', creditType: 'Regular', amount: 5000000, status: 'En proceso', startDate: '2023-11-01', assignedTo: 'Wilmer Marquez' },
-    { id: 'OPP002', leadCedula: '5-3333-4444', creditType: 'Micro-crédito', amount: 500000, status: 'Convertido', startDate: '2023-11-02', assignedTo: 'Carlos Mendez' },
-    { id: 'OPP003', leadCedula: '3-1111-2222', creditType: 'Regular', amount: 2000000, status: 'Rechazada', startDate: '2023-11-03', assignedTo: 'Wilmer Marquez' },
-    { id: 'OPP004', leadCedula: '4-2222-3333', creditType: 'Regular', amount: 7000000, status: 'Aceptada', startDate: '2023-11-04', assignedTo: 'Carlos Mendez' },
+    { id: 'OPP001', lead_cedula: '2-0987-6543', leadCedula: '2-0987-6543', creditType: 'Regular', amount: 5000000, status: 'En proceso', startDate: '2023-11-01', assignedTo: 'Wilmer Marquez' },
+    { id: 'OPP002', lead_cedula: '5-3333-4444', leadCedula: '5-3333-4444', creditType: 'Micro-crédito', amount: 500000, status: 'Convertido', startDate: '2023-11-02', assignedTo: 'Carlos Mendez' },
+    { id: 'OPP003', lead_cedula: '3-1111-2222', leadCedula: '3-1111-2222', creditType: 'Regular', amount: 2000000, status: 'Rechazada', startDate: '2023-11-03', assignedTo: 'Wilmer Marquez' },
+    { id: 'OPP004', lead_cedula: '4-2222-3333', leadCedula: '4-2222-3333', creditType: 'Regular', amount: 7000000, status: 'Aceptada', startDate: '2023-11-04', assignedTo: 'Carlos Mendez' },
 ];
 
 export const credits: Credit[] = [

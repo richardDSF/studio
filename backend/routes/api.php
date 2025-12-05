@@ -24,6 +24,15 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // --- Rutas de Negocio (Públicas) ---
 
+// Utilidades / Listas
+Route::get('/agents', function () {
+    return response()->json(\App\Models\User::select('id', 'name')->get());
+});
+
+Route::get('/lead-statuses', function () {
+    return response()->json(\App\Models\LeadStatus::select('id', 'name')->orderBy('order_column')->get());
+});
+
 // Leads
 Route::post('/leads/{id}/convert', [LeadController::class, 'convertToClient']);
 Route::apiResource('leads', LeadController::class);

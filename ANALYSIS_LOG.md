@@ -120,7 +120,7 @@ Se realizó una refactorización profunda del modelo `Opportunity` para garantiz
 
 **Archivos Afectados:**
 - `backend/app/Models/Opportunity.php` (Modificado)
-- `backend/app/Http/Controllers/AuthController.php` (Creado)
+- `backend/app/Http/Controllers/Api/AuthController.php` (Creado)
 
 **Resultado/Log:**
 ```php
@@ -149,7 +149,7 @@ Se implementó la lógica de negocio para el registro y login de usuarios en el 
     -   **Middleware Stateful**: Se habilitó `$middleware->statefulApi()` para permitir que Sanctum maneje la autenticación de SPA (cookies/sesión) correctamente en las rutas de API.
 
 **Archivos Afectados:**
-- `backend/app/Http/Controllers/AuthController.php` (Lógica implementada)
+- `backend/app/Http/Controllers/Api/AuthController.php` (Lógica implementada)
 - `backend/bootstrap/app.php` (Configuración de rutas y middleware)
 
 **Notas:**
@@ -261,7 +261,7 @@ Se creó el controlador `LeadController` para gestionar las operaciones CRUD de 
     -   Se añadió `Route::apiResource('leads', LeadController::class);` dentro del grupo de rutas protegidas (`auth:sanctum`) en `routes/api.php`.
 
 **Archivos Afectados:**
-- `backend/app/Http/Controllers/LeadController.php` (Creado e implementado)
+- `backend/app/Http/Controllers/Api/LeadController.php` (Creado e implementado)
 - `backend/routes/api.php` (Modificado)
 
 **Estado Actual:**
@@ -282,7 +282,7 @@ Se creó el controlador `ClientController` para gestionar las operaciones CRUD d
     -   Se añadió `Route::apiResource('clients', ClientController::class);` en `routes/api.php`.
 
 **Archivos Afectados:**
-- `backend/app/Http/Controllers/ClientController.php` (Creado e implementado)
+- `backend/app/Http/Controllers/Api/ClientController.php` (Creado e implementado)
 - `backend/routes/api.php` (Modificado)
 
 **Estado Actual:**
@@ -304,7 +304,7 @@ Se creó el controlador `OpportunityController` para gestionar las operaciones C
     -   Se añadió `Route::apiResource('opportunities', OpportunityController::class);` en `routes/api.php`.
 
 **Archivos Afectados:**
-- `backend/app/Http/Controllers/OpportunityController.php` (Creado e implementado)
+- `backend/app/Http/Controllers/Api/OpportunityController.php` (Creado e implementado)
 - `backend/routes/api.php` (Modificado)
 
 **Estado Actual:**
@@ -328,7 +328,7 @@ Se eliminaron todas las referencias al término "staff" en el módulo de Oportun
 
 **Archivos Afectados:**
 - `backend/app/Models/Opportunity.php`
-- `backend/app/Http/Controllers/OpportunityController.php`
+- `backend/app/Http/Controllers/Api/OpportunityController.php`
 - `backend/database/migrations/2025_12_04_214837_opportunities.php`
 
 **Estado Actual:**
@@ -372,7 +372,7 @@ Se extendió el análisis de "pruebas imaginarias" a los controladores y modelos
 **Archivos Afectados:**
 - `backend/app/Models/Lead.php` (Relación agregada)
 - `backend/app/Models/Client.php` (Relación agregada)
-- `backend/app/Http/Controllers/LeadController.php` (Validación corregida)
+- `backend/app/Http/Controllers/Api/LeadController.php` (Validación corregida)
 
 **Estado Actual:**
 - Los controladores ahora son robustos y consistentes con los modelos. El backend está listo para integración frontend.
