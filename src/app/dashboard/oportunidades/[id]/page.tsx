@@ -23,7 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 
 import api from "@/lib/axios";
-import { Opportunity, chatMessages, OPPORTUNITY_STATUSES } from "@/lib/data";
+import { Opportunity, chatMessages, OPPORTUNITY_STATUSES, OPPORTUNITY_TYPES } from "@/lib/data";
 
 export default function OpportunityDetailPage() {
   const params = useParams();
@@ -34,38 +34,14 @@ export default function OpportunityDetailPage() {
   const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(false);
-
-  // Mock data for initial render if API fails or for development
-  const mockOpportunity: Opportunity = {
-    id: "25-00001-OP",
-    lead_cedula: "1-2345-6789",
-    vertical: "CCSS",
-    amount: 2090900,
-    status: "En seguimiento",
-    created_at: "2025-11-19T21:31:00",
-    updated_at: "2025-12-08T16:00:00",
-    expected_close_date: "2026-01-14",
-    amparo_id: "AMP-2025-001",
-    tags: ["Lista de espera", "Cita a largo plazo"],
-    lead: {
-      id: "1",
-      name: "Maria",
-      apellido1: "Fernández",
-      cedula: "1-2345-6789",
-      email: "maria@example.com",
-      phone: "8888-8888"
-    }
-  };
+  const [updatingType, setUpdatingType] = useState(false);
 
   useEffect(() => {
     const fetchOpportunity = async () => {
       try {
-        // In a real scenario, uncomment this:
-        // const response = await api.get(`/api/opportunities/${id}`);
-        // setOpportunity(response.data);
-        
-        // For now, use mock data to match the design requirement
-        setOpportunity(mockOpportunity);
+        const response = await api.get(`/api/opportunities/${id}`);
+        const data = response.data.data || response.data;
+        setOpportunity(data);
       } catch (error) {
         console.error("Error fetching opportunity:", error);
         toast({ title: "Error", description: "No se pudo cargar la oportunidad.", variant: "destructive" });
@@ -96,6 +72,26 @@ export default function OpportunityDetailPage() {
       toast({ title: "Error", description: "No se pudo actualizar el estado.", variant: "destructive" });
     } finally {
       setUpdatingStatus(false);
+    }
+  };
+
+  const handleTypeChange = async (newType: string) => {
+    if (!opportunity) return;
+    
+    try {
+      setUpdatingType(true);
+      // Optimistic update
+      setOpportunity(prev => prev ? { ...prev, opportunity_type: newType } : null);
+      
+      // API call
+      await api.put(`/api/opportunities/${opportunity.id}`, { opportunity_type: newType });
+      
+      toast({ title: "Tipo actualizado", description: `La oportunidad ahora es de tipo ${newType}.` });
+    } catch (error) {
+      console.error("Error updating type:", error);
+      toast({ title: "Error", description: "No se pudo actualizar el tipo.", variant: "destructive" });
+    } finally {
+      setUpdatingType(false);
     }
   };
 
@@ -210,10 +206,20 @@ export default function OpportunityDetailPage() {
                       <div>
                         <p className="text-xs font-medium text-muted-foreground uppercase mb-1">TIPO</p>
                         <div className="flex flex-wrap gap-2">
-                          {opportunity.tags?.map((tag) => (
-                            <Badge key={tag} variant="outline" className="text-slate-600 font-normal">
-                              {tag}
-                            </Badge>
+                          {OPPORTUNITY_TYPES.map((type) => (
+                            <Button
+                              key={type}
+                              variant={opportunity.opportunity_type === type ? "default" : "outline"}
+                              onClick={() => handleTypeChange(type)}
+                              disabled={updatingType}
+                              className={`h-7 text-xs ${
+                                opportunity.opportunity_type === type 
+                                  ? "bg-slate-900 text-white hover:bg-slate-800" 
+                                  : "text-slate-600 border-slate-200"
+                              }`}
+                            >
+                              {type}
+                            </Button>
                           ))}
                         </div>
                       </div>
@@ -221,13 +227,6 @@ export default function OpportunityDetailPage() {
                       <div>
                         <p className="text-xs font-medium text-muted-foreground uppercase mb-1">MONTO ESTIMADO</p>
                         <p className="text-sm font-medium text-slate-900">{formatCurrency(opportunity.amount)}</p>
-                      </div>
-
-                      <div>
-                        <p className="text-xs font-medium text-muted-foreground uppercase mb-1">AMPARO VINCULADO</p>
-                        <p className="text-sm font-medium text-blue-600 hover:underline cursor-pointer">
-                          {opportunity.amparo_id}
-                        </p>
                       </div>
                     </div>
 

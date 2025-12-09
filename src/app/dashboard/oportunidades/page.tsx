@@ -12,7 +12,9 @@ import {
   Loader2,
   Search,
   Filter,
-  Calendar
+  Calendar,
+  Check,
+  ChevronsUpDown
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -50,24 +52,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 
 import api from "@/lib/axios";
-import { type Opportunity, type Lead, OPPORTUNITY_STATUSES } from "@/lib/data";
+import { type Opportunity, type Lead, OPPORTUNITY_STATUSES, VERTICAL_OPTIONS, OPPORTUNITY_TYPES } from "@/lib/data";
 
 // --- Constants & Helpers (Inlined from dsf3/lib) ---
 
-const VERTICAL_OPTIONS = ["CCSS", "MEP"] as const;
 const CASE_STATUS_OPTIONS = ["Abierto", "En Progreso", "En Espera", "Cerrado"] as const;
 const CASE_CATEGORY_OPTIONS = ["Contenciosa", "No Contenciosa"] as const;
-
-const OPPORTUNITY_TYPE_OPTIONS: Record<string, string[]> = {
-  CCSS: ["Regular", "Micro-crédito", "Refundición"],
-  MEP: ["Regular", "Compra de Saldo"],
-};
 
 type SortableColumn =
   | "reference"
@@ -105,10 +106,6 @@ interface ConvertCaseFormValues {
   openedAt: string;
   description: string;
 }
-
-const resolveDefaultOpportunityType = (vertical: string) => {
-  return OPPORTUNITY_TYPE_OPTIONS[vertical]?.[0] || "Regular";
-};
 
 const normalizeOpportunityVertical = (vertical?: string | null) => {
   if (!vertical) return VERTICAL_OPTIONS[0];
@@ -181,7 +178,7 @@ export default function DealsPage() {
   const [formValues, setFormValues] = useState<OpportunityFormValues>({
     leadId: "",
     vertical: VERTICAL_OPTIONS[0],
-    opportunityType: resolveDefaultOpportunityType(VERTICAL_OPTIONS[0]),
+    opportunityType: OPPORTUNITY_TYPES[0],
     status: OPPORTUNITY_STATUSES[0],
     amount: "",
     expectedCloseDate: "",
@@ -209,6 +206,12 @@ export default function DealsPage() {
   });
   const [isConvertingCase, setIsConvertingCase] = useState(false);
 
+  // Combobox state
+  const [openVertical, setOpenVertical] = useState(false);
+  const [searchVertical, setSearchVertical] = useState("");
+  const [openFilterVertical, setOpenFilterVertical] = useState(false);
+  const [searchFilterVertical, setSearchFilterVertical] = useState("");
+
   // Filters & Sort
   const [filters, setFilters] = useState<OpportunityTableFilters>({
     search: "",
@@ -234,7 +237,7 @@ export default function DealsPage() {
       setOpportunities(Array.isArray(data) ? data.map((item: any) => ({
           ...item,
           vertical: normalizeOpportunityVertical(item.vertical),
-          opportunity_type: item.opportunity_type || resolveDefaultOpportunityType(item.vertical),
+          opportunity_type: item.opportunity_type || OPPORTUNITY_TYPES[0],
           amount: resolveEstimatedOpportunityAmount(item.amount),
       })) : []);
     } catch (error) {
@@ -279,7 +282,7 @@ export default function DealsPage() {
     setFormValues({
       leadId: opportunity?.lead?.id ? String(opportunity.lead.id) : "",
       vertical: derivedVertical,
-      opportunityType: opportunity?.opportunity_type || resolveDefaultOpportunityType(derivedVertical),
+      opportunityType: opportunity?.opportunity_type || OPPORTUNITY_TYPES[0],
       status: opportunity?.status ?? defaultStatus,
       amount: opportunity?.amount != null ? String(opportunity.amount) : "",
       expectedCloseDate: opportunity?.expected_close_date ?? "",
@@ -581,6 +584,30 @@ export default function DealsPage() {
 
   // --- Export ---
 
+  const handleExportSinglePDF = useCallback((opportunity: Opportunity) => {
+    const doc = new jsPDF({ orientation: "landscape" });
+    doc.setFontSize(12);
+    doc.text(`Detalle de Oportunidad #${opportunity.id}`, 14, 16);
+
+    autoTable(doc, {
+      startY: 22,
+      head: [["Referencia", "Lead", "Correo", "Estado", "Tipo", "Monto", "Cierre esperado", "Creada"]],
+      body: [[
+        formatOpportunityReference(opportunity.id),
+        opportunity.lead?.name ?? "Lead desconocido",
+        opportunity.lead?.email ?? "Sin correo",
+        opportunity.status ?? "Abierta",
+        opportunity.opportunity_type ?? "Sin tipo",
+        formatAmountForExport(opportunity.amount),
+        formatDate(opportunity.expected_close_date),
+        formatDate(opportunity.created_at),
+      ]],
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [220, 53, 69] },
+    });
+    doc.save(`oportunidad_${opportunity.id}.pdf`);
+  }, []);
+
   const handleExportCSV = useCallback(() => {
     if (visibleOpportunities.length === 0) {
       toast({ title: "Sin datos", description: "No hay datos para exportar.", variant: "destructive" });
@@ -652,6 +679,16 @@ export default function DealsPage() {
     }));
   }, [leads]);
 
+  const filteredVerticals = useMemo(() => {
+    if (!searchVertical) return VERTICAL_OPTIONS;
+    return VERTICAL_OPTIONS.filter((v) => v.toLowerCase().includes(searchVertical.toLowerCase()));
+  }, [searchVertical]);
+
+  const filteredFilterVerticals = useMemo(() => {
+    if (!searchFilterVertical) return VERTICAL_OPTIONS;
+    return VERTICAL_OPTIONS.filter((v) => v.toLowerCase().includes(searchFilterVertical.toLowerCase()));
+  }, [searchFilterVertical]);
+
   return (
     <Card>
       <CardHeader>
@@ -711,15 +748,70 @@ export default function DealsPage() {
             </div>
             <div className="space-y-1">
                 <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Vertical</Label>
-                <Select value={filters.vertical} onValueChange={(value) => handleFilterChange("vertical", value)}>
-                    <SelectTrigger><SelectValue placeholder="Todas las verticales" /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="todos">Todas las verticales</SelectItem>
-                        {VERTICAL_OPTIONS.map((option) => (
-                            <SelectItem key={option} value={option}>{option}</SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <Popover open={openFilterVertical} onOpenChange={setOpenFilterVertical} modal={true}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openFilterVertical}
+                      className="w-full justify-between"
+                    >
+                      {filters.vertical !== "todos"
+                        ? VERTICAL_OPTIONS.find((v) => v === filters.vertical)
+                        : "Todas las verticales"}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[200px] p-0 z-[200]">
+                    <div className="p-2 border-b">
+                        <Input 
+                            placeholder="Buscar vertical..." 
+                            value={searchFilterVertical} 
+                            onChange={(e) => setSearchFilterVertical(e.target.value)}
+                            className="h-8"
+                        />
+                    </div>
+                    <div className="max-h-[300px] overflow-y-auto p-1">
+                        <div
+                            className={`relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground ${filters.vertical === "todos" ? "bg-accent text-accent-foreground" : ""}`}
+                            onClick={() => {
+                                handleFilterChange("vertical", "todos");
+                                setOpenFilterVertical(false);
+                                setSearchFilterVertical("");
+                            }}
+                        >
+                            <Check
+                                className={`mr-2 h-4 w-4 ${
+                                    filters.vertical === "todos" ? "opacity-100" : "opacity-0"
+                                }`}
+                            />
+                            Todas las verticales
+                        </div>
+                        {filteredFilterVerticals.length === 0 ? (
+                            <div className="py-6 text-center text-sm text-muted-foreground">No se encontraron resultados.</div>
+                        ) : (
+                            filteredFilterVerticals.map((vertical) => (
+                                <div
+                                    key={vertical}
+                                    className={`relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground ${filters.vertical === vertical ? "bg-accent text-accent-foreground" : ""}`}
+                                    onClick={() => {
+                                        handleFilterChange("vertical", vertical);
+                                        setOpenFilterVertical(false);
+                                        setSearchFilterVertical("");
+                                    }}
+                                >
+                                    <Check
+                                        className={`mr-2 h-4 w-4 ${
+                                            filters.vertical === vertical ? "opacity-100" : "opacity-0"
+                                        }`}
+                                    />
+                                    {vertical}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
             </div>
         </div>
 
@@ -800,10 +892,12 @@ export default function DealsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => openDetailDialog(opportunity)}>Ver detalle</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openEditDialog(opportunity)}>Editar</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openConvertCaseDialog(opportunity)}>Convertir a Caso</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => openDeleteDialog(opportunity)} className="text-destructive">Eliminar</DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link href={`/dashboard/oportunidades/${opportunity.id}`} className="cursor-pointer w-full">
+                              Ver detalle
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleExportSinglePDF(opportunity)}>Exportar</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -834,20 +928,62 @@ export default function DealsPage() {
             </div>
             <div className="space-y-2">
                 <Label>Vertical</Label>
-                <div className="flex gap-2">
-                    {VERTICAL_OPTIONS.map(opt => (
-                        <Button key={opt} type="button" variant={formValues.vertical === opt ? "default" : "outline"} onClick={() => setFormValues(prev => ({ ...prev, vertical: opt, opportunityType: resolveDefaultOpportunityType(opt) }))}>
-                            {opt}
-                        </Button>
-                    ))}
-                </div>
+                <Popover open={openVertical} onOpenChange={setOpenVertical} modal={true}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openVertical}
+                      className="w-full justify-between"
+                    >
+                      {formValues.vertical
+                        ? VERTICAL_OPTIONS.find((v) => v === formValues.vertical)
+                        : "Seleccionar vertical..."}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[400px] p-0 z-[200]">
+                    <div className="p-2 border-b">
+                        <Input 
+                            placeholder="Buscar vertical..." 
+                            value={searchVertical} 
+                            onChange={(e) => setSearchVertical(e.target.value)}
+                            className="h-8"
+                        />
+                    </div>
+                    <div className="max-h-[300px] overflow-y-auto p-1">
+                        {filteredVerticals.length === 0 ? (
+                            <div className="py-6 text-center text-sm text-muted-foreground">No se encontraron resultados.</div>
+                        ) : (
+                            filteredVerticals.map((vertical) => (
+                                <div
+                                    key={vertical}
+                                    className={`relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 ${formValues.vertical === vertical ? "bg-accent text-accent-foreground" : ""}`}
+                                    onClick={() => {
+                                        setFormValues(prev => ({ ...prev, vertical: vertical }));
+                                        setOpenVertical(false);
+                                        setSearchVertical("");
+                                    }}
+                                >
+                                    <Check
+                                        className={`mr-2 h-4 w-4 ${
+                                            formValues.vertical === vertical ? "opacity-100" : "opacity-0"
+                                        }`}
+                                    />
+                                    {vertical}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                  </PopoverContent>
+                </Popover>
             </div>
             <div className="space-y-2">
                 <Label>Tipo</Label>
                 <Select value={formValues.opportunityType} onValueChange={(val) => setFormValues(prev => ({ ...prev, opportunityType: val }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                        {(OPPORTUNITY_TYPE_OPTIONS[formValues.vertical] || []).map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                        {OPPORTUNITY_TYPES.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                     </SelectContent>
                 </Select>
             </div>

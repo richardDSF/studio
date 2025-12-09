@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, User as UserIcon, Save, Loader2, PanelRightClose, PanelRightOpen, Pencil, Sparkles, UserCheck, Archive } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Save, Loader2, PanelRightClose, PanelRightOpen, Pencil, Sparkles, UserCheck, Archive, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useToast } from "@/hooks/use-toast";
 import { CaseChat } from "@/components/case-chat";
+import { CreateOpportunityDialog } from "@/components/opportunities/create-opportunity-dialog";
 
 import api from "@/lib/axios";
 import { Lead } from "@/lib/data";
@@ -37,6 +38,7 @@ export default function LeadDetailPage() {
     const [saving, setSaving] = useState(false);
     const [formData, setFormData] = useState<Partial<Lead>>({});
     const [isPanelVisible, setIsPanelVisible] = useState(true);
+    const [isOpportunityDialogOpen, setIsOpportunityDialogOpen] = useState(false);
 
     useEffect(() => {
         const fetchLead = async () => {
@@ -95,6 +97,9 @@ export default function LeadDetailPage() {
                     <span>volver al CRM</span>
                 </div>
                 <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setIsOpportunityDialogOpen(true)}>
+                        Crear oportunidad
+                    </Button>
                     {isEditMode && (
                         <>
                             <Button variant="ghost" onClick={() => router.push(`/dashboard/leads/${id}?mode=view`)}>Cancelar</Button>
@@ -165,11 +170,15 @@ export default function LeadDetailPage() {
                                         <TooltipProvider>
                                             <Tooltip>
                                                 <TooltipTrigger asChild>
-                                                    <Button size="icon" className="h-9 w-9 rounded-md bg-blue-900 text-white hover:bg-blue-800 border-0">
+                                                    <Button 
+                                                        size="icon" 
+                                                        className="h-9 w-9 rounded-md bg-blue-900 text-white hover:bg-blue-800 border-0"
+                                                        onClick={() => setIsOpportunityDialogOpen(true)}
+                                                    >
                                                         <Sparkles className="h-4 w-4" />
                                                     </Button>
                                                 </TooltipTrigger>
-                                                <TooltipContent>Análisis AI</TooltipContent>
+                                                <TooltipContent>Crear Oportunidad</TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
 
@@ -431,6 +440,14 @@ export default function LeadDetailPage() {
                     </div>
                 )}
             </div>
+
+            <CreateOpportunityDialog
+                open={isOpportunityDialogOpen}
+                onOpenChange={setIsOpportunityDialogOpen}
+                leads={lead ? [lead] : []}
+                defaultLeadId={lead ? String(lead.id) : undefined}
+                onSuccess={() => window.location.reload()}
+            />
         </div>
     );
 }

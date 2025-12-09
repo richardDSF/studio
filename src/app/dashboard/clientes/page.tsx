@@ -43,6 +43,7 @@ import { useToast } from "@/hooks/use-toast";
 // Importamos la conexión real y los tipos
 import api from '@/lib/axios';
 import { type Client, type Lead, type User } from '@/lib/data';
+import { CreateOpportunityDialog } from "@/components/opportunities/create-opportunity-dialog";
 
 // --- Helpers ---
 
@@ -158,14 +159,6 @@ export default function ClientesPage() {
   // Opportunity Dialog State
   const [isOpportunityDialogOpen, setIsOpportunityDialogOpen] = useState(false);
   const [leadForOpportunity, setLeadForOpportunity] = useState<Lead | null>(null);
-  const [opportunityForm, setOpportunityForm] = useState({
-    program: "CCSS",
-    date: new Date().toISOString().slice(0, 10),
-    comments: "",
-    amount: "",
-    type: "Regular"
-  });
-  const [isSavingOpportunity, setIsSavingOpportunity] = useState(false);
 
   // Delete Client State
   const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
@@ -494,7 +487,6 @@ export default function ClientesPage() {
       switch (action) {
           case 'create_opportunity':
               setLeadForOpportunity(lead);
-              setOpportunityForm(prev => ({ ...prev, amount: "", comments: "" }));
               setIsOpportunityDialogOpen(true);
               break;
           case 'edit':
@@ -568,35 +560,7 @@ export default function ClientesPage() {
       }
   };
 
-  const handleOpportunitySubmit = async () => {
-      if (!leadForOpportunity || !leadForOpportunity.cedula) {
-          toast({ title: "Error", description: "Lead sin cédula válida.", variant: "destructive" });
-          return;
-      }
-      if (!opportunityForm.amount) {
-          toast({ title: "Error", description: "Monto requerido.", variant: "destructive" });
-          return;
-      }
 
-      try {
-          setIsSavingOpportunity(true);
-          await api.post('/api/opportunities', {
-              lead_cedula: leadForOpportunity.cedula,
-              amount: parseFloat(opportunityForm.amount),
-              opportunity_type: opportunityForm.type,
-              status: 'Abierta',
-              assigned_to_id: (leadForOpportunity as any).assigned_to_id,
-              notes: opportunityForm.comments
-          });
-          toast({ title: "Oportunidad creada", description: "Registrada exitosamente." });
-          setIsOpportunityDialogOpen(false);
-      } catch (error) {
-          console.error("Error creating opportunity:", error);
-          toast({ title: "Error", description: "No se pudo crear.", variant: "destructive" });
-      } finally {
-          setIsSavingOpportunity(false);
-      }
-  };
 
   if (error) return <div className="p-8 text-center text-destructive">{error}</div>;
 
@@ -883,70 +847,13 @@ export default function ClientesPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isOpportunityDialogOpen} onOpenChange={setIsOpportunityDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Crear oportunidad</DialogTitle>
-            <DialogDescription>Completa la información para registrar el seguimiento del lead.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Nombre completo</Label>
-                <Input value={getLeadDisplayName(leadForOpportunity)} readOnly />
-              </div>
-              <div className="space-y-2">
-                <Label>Cédula</Label>
-                <Input value={leadForOpportunity?.cedula ?? "Sin cédula"} readOnly />
-              </div>
-            </div>
-            <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                    <Label>Monto</Label>
-                    <Input 
-                        type="number" 
-                        value={opportunityForm.amount} 
-                        onChange={(e) => setOpportunityForm(prev => ({ ...prev, amount: e.target.value }))}
-                        placeholder="0.00"
-                    />
-                </div>
-                <div className="space-y-2">
-                    <Label>Tipo</Label>
-                    <Select 
-                        value={opportunityForm.type} 
-                        onValueChange={(value) => setOpportunityForm(prev => ({ ...prev, type: value }))}
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder="Selecciona tipo" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="Regular">Regular</SelectItem>
-                            <SelectItem value="Micro-crédito">Micro-crédito</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
-            <div className="space-y-2 md:col-span-2">
-                <Label htmlFor="opportunity-comments">Comentarios</Label>
-                <Textarea
-                  id="opportunity-comments"
-                  value={opportunityForm.comments}
-                  onChange={(event) => setOpportunityForm((prev) => ({ ...prev, comments: event.target.value }))}
-                  placeholder="Notas relevantes para el seguimiento"
-                  rows={4}
-                />
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsOpportunityDialogOpen(false)} disabled={isSavingOpportunity}>
-                Cancelar
-              </Button>
-              <Button type="button" onClick={handleOpportunitySubmit} disabled={isSavingOpportunity || !leadForOpportunity}>
-                {isSavingOpportunity ? "Guardando..." : "Crear oportunidad"}
-              </Button>
-            </DialogFooter>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <CreateOpportunityDialog 
+        open={isOpportunityDialogOpen} 
+        onOpenChange={setIsOpportunityDialogOpen}
+        leads={leadForOpportunity ? [leadForOpportunity] : []}
+        defaultLeadId={leadForOpportunity ? String(leadForOpportunity.id) : undefined}
+        onSuccess={fetchData}
+      />
 
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <DialogContent>

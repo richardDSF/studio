@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, User as UserIcon, Save, Loader2, PanelRightClose, PanelRightOpen, ChevronDown, ChevronUp, Paperclip, Send, Smile, Pencil, Sparkles, Archive, FileText } from "lucide-react";
+import { ArrowLeft, User as UserIcon, Save, Loader2, PanelRightClose, PanelRightOpen, ChevronDown, ChevronUp, Paperclip, Send, Smile, Pencil, Sparkles, Archive, FileText, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,9 +19,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useToast } from "@/hooks/use-toast";
 import { CaseChat } from "@/components/case-chat";
+import { CreateOpportunityDialog } from "@/components/opportunities/create-opportunity-dialog";
 
 import api from "@/lib/axios";
-import { Client, chatMessages } from "@/lib/data";
+import { Client, chatMessages, Lead } from "@/lib/data";
 
 export default function ClientDetailPage() {
   const params = useParams();
@@ -39,6 +40,7 @@ export default function ClientDetailPage() {
   const [formData, setFormData] = useState<Partial<Client>>({});
   const [isPanelVisible, setIsPanelVisible] = useState(true);
   const [isOpportunitiesOpen, setIsOpportunitiesOpen] = useState(true);
+  const [isOpportunityDialogOpen, setIsOpportunityDialogOpen] = useState(false);
 
   useEffect(() => {
     const fetchClient = async () => {
@@ -97,6 +99,9 @@ export default function ClientDetailPage() {
           <span>volver al CRM</span>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={() => setIsOpportunityDialogOpen(true)}>
+            Crear oportunidad
+          </Button>
           {isEditMode && (
             <>
               <Button variant="ghost" onClick={() => router.push(`/dashboard/clientes/${id}?mode=view`)}>Cancelar</Button>
@@ -167,11 +172,15 @@ export default function ClientDetailPage() {
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button size="icon" className="h-9 w-9 rounded-md bg-blue-900 text-white hover:bg-blue-800 border-0">
+                                        <Button 
+                                            size="icon" 
+                                            className="h-9 w-9 rounded-md bg-blue-900 text-white hover:bg-blue-800 border-0"
+                                            onClick={() => setIsOpportunityDialogOpen(true)}
+                                        >
                                             <Sparkles className="h-4 w-4" />
                                         </Button>
                                     </TooltipTrigger>
-                                    <TooltipContent>Análisis AI</TooltipContent>
+                                    <TooltipContent>Crear Oportunidad</TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
 
@@ -538,6 +547,11 @@ export default function ClientDetailPage() {
                 <TabsContent value="oportunidades" className="flex-1 p-4 m-0 overflow-y-auto">
                   <div className="text-center text-muted-foreground py-8">
                     No hay oportunidades activas.
+                    <div className="mt-4">
+                        <Button variant="outline" size="sm" onClick={() => setIsOpportunityDialogOpen(true)}>
+                            Crear oportunidad
+                        </Button>
+                    </div>
                   </div>
                 </TabsContent>
 
@@ -658,6 +672,18 @@ export default function ClientDetailPage() {
           </div>
         )}
       </div>
+
+      <CreateOpportunityDialog 
+        open={isOpportunityDialogOpen} 
+        onOpenChange={setIsOpportunityDialogOpen}
+        leads={client ? [client as unknown as Lead] : []}
+        defaultLeadId={client ? String(client.id) : undefined}
+        onSuccess={() => {
+            // Refresh client data to show new opportunity
+            // Ideally we would refetch here, but for now we rely on page reload or optimistic updates if implemented
+            window.location.reload();
+        }}
+      />
     </div>
   );
 }
