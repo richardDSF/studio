@@ -4,9 +4,11 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Rewards\RewardUser;
 
 class User extends Authenticatable
 {
@@ -47,5 +49,27 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Gamification Relationships
+    |--------------------------------------------------------------------------
+    */
+
+    /**
+     * Get user's reward profile
+     */
+    public function rewardUser(): HasOne
+    {
+        return $this->hasOne(RewardUser::class);
+    }
+
+    /**
+     * Get or create user's reward profile
+     */
+    public function getOrCreateRewardUser(): RewardUser
+    {
+        return RewardUser::findOrCreateForUser($this);
     }
 }
