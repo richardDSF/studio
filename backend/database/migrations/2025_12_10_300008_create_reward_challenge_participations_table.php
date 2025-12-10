@@ -21,7 +21,7 @@ return new class extends Migration
             $table->json('rewards_claimed')->nullable();
             $table->timestamps();
 
-            $table->unique(['challenge_id', 'reward_user_id']);
+            $table->unique(['challenge_id', 'reward_user_id'], 'challenge_user_unique');
         });
     }
 
