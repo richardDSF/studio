@@ -389,7 +389,6 @@ export default function ClientDetailPage() {
                     <SelectContent>
                       <SelectItem value="Masculino">Masculino</SelectItem>
                       <SelectItem value="Femenino">Femenino</SelectItem>
-                      <SelectItem value="Otro">Otro</SelectItem>
                     </SelectContent>
                   </Select>
                 ) : (
@@ -813,22 +812,22 @@ export default function ClientDetailPage() {
           <div>
             <h3 className="text-lg font-medium mb-4">Otros Detalles</h3>
             <div className="grid gap-4 md:grid-cols-3">
-              <div className="space-y-2">
-                <Label>Estado</Label>
-                <Input 
-                  value={formData.status || ""} 
-                  onChange={(e) => handleInputChange("status", e.target.value)} 
-                  disabled={!isEditMode} 
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Lead Status ID</Label>
-                <Input 
-                  value={(formData as any).lead_status_id || ""} 
-                  onChange={(e) => handleInputChange("lead_status_id" as keyof Client, e.target.value)} 
-                  disabled={!isEditMode} 
-                />
-              </div>
+              {/*<div className="space-y-2">*/}
+              {/*  <Label>Estado</Label>*/}
+              {/*  <Input */}
+              {/*    value={formData.status || ""} */}
+              {/*    onChange={(e) => handleInputChange("status", e.target.value)} */}
+              {/*    disabled={!isEditMode} */}
+              {/*  />*/}
+              {/*</div>*/}
+              {/*<div className="space-y-2">*/}
+              {/*  <Label>Lead Status ID</Label>*/}
+              {/*  <Input */}
+              {/*    value={(formData as any).lead_status_id || ""} */}
+              {/*    onChange={(e) => handleInputChange("lead_status_id" as keyof Client, e.target.value)} */}
+              {/*    disabled={!isEditMode} */}
+              {/*  />*/}
+              {/*</div>*/}
               <div className="space-y-2">
                 <Label>Responsable</Label>
                 {isEditMode ? (

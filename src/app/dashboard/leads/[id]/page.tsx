@@ -382,7 +382,6 @@ export default function LeadDetailPage() {
                                                 <SelectContent>
                                                     <SelectItem value="Masculino">Masculino</SelectItem>
                                                     <SelectItem value="Femenino">Femenino</SelectItem>
-                                                    <SelectItem value="Otro">Otro</SelectItem>
                                                 </SelectContent>
                                             </Select>
                                         ) : (
@@ -822,14 +821,14 @@ export default function LeadDetailPage() {
                                             />
                                         )}
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label>Estado</Label>
-                                        <Input
-                                            value={(formData as any).status || ""}
-                                            onChange={(e) => handleInputChange("status" as keyof Lead, e.target.value)}
-                                            disabled={!isEditMode}
-                                        />
-                                    </div>
+                                    {/*<div className="space-y-2">*/}
+                                    {/*    <Label>Estado</Label>*/}
+                                    {/*    <Input*/}
+                                    {/*        value={(formData as any).status || ""}*/}
+                                    {/*        onChange={(e) => handleInputChange("status" as keyof Lead, e.target.value)}*/}
+                                    {/*        disabled={!isEditMode}*/}
+                                    {/*    />*/}
+                                    {/*</div>*/}
                                     <div className="space-y-2">
                                         <Label>Fuente (Source)</Label>
                                         <Input
