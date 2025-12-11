@@ -137,18 +137,18 @@ class BadgeService
     public function getUserBadges(RewardUser $user): array
     {
         return $user->badges()
-            ->with('category')
-            ->orderByDesc('pivot_earned_at')
+            ->with('badge.category')
+            ->orderByDesc('earned_at')
             ->get()
-            ->map(fn ($badge) => [
-                'id' => $badge->id,
-                'slug' => $badge->slug,
-                'name' => $badge->name,
-                'description' => $badge->description,
-                'icon' => $badge->icon,
-                'rarity' => $badge->rarity,
-                'category' => $badge->category?->name,
-                'earned_at' => $badge->pivot->earned_at,
+            ->map(fn ($userBadge) => [
+                'id' => $userBadge->badge->id,
+                'slug' => $userBadge->badge->slug,
+                'name' => $userBadge->badge->name,
+                'description' => $userBadge->badge->description,
+                'icon' => $userBadge->badge->icon,
+                'rarity' => $userBadge->badge->rarity,
+                'category' => $userBadge->badge->category?->name,
+                'earned_at' => $userBadge->earned_at,
             ])
             ->toArray();
     }
@@ -158,7 +158,7 @@ class BadgeService
      */
     public function getAvailableBadges(RewardUser $user): array
     {
-        $userBadgeIds = $user->badges()->pluck('reward_badges.id')->toArray();
+        $userBadgeIds = $user->badges()->pluck('reward_badge_id')->toArray();
 
         return RewardBadge::where('is_active', true)
             ->where('is_secret', false)

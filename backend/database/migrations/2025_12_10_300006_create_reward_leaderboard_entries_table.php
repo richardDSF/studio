@@ -22,8 +22,8 @@ return new class extends Migration
             $table->date('period_end');
             $table->timestamps();
 
-            $table->unique(['leaderboard_id', 'reward_user_id', 'period_start']);
-            $table->index(['leaderboard_id', 'period_start', 'rank']);
+            $table->unique(['leaderboard_id', 'reward_user_id', 'period_start'], 'lb_entries_unique');
+            $table->index(['leaderboard_id', 'period_start', 'rank'], 'lb_entries_rank_idx');
         });
     }
 

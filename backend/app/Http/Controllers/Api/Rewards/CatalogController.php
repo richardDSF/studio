@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Rewards;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Models\Rewards\RewardCatalogItem;
 use App\Services\Rewards\RewardService;
 use App\Services\Rewards\CatalogService;
@@ -19,11 +20,19 @@ class CatalogController extends Controller
     ) {}
 
     /**
+     * Helper para obtener el usuario (autenticado o de prueba).
+     */
+    protected function getUser(Request $request): User
+    {
+        return $request->user() ?? User::firstOrFail();
+    }
+
+    /**
      * Lista los items del catálogo disponibles.
      */
     public function index(Request $request): JsonResponse
     {
-        $user = $request->user();
+        $user = $this->getUser($request);
         $rewardUser = $this->rewardService->getOrCreateRewardUser($user->id);
 
         $category = $request->input('category');
@@ -44,7 +53,7 @@ class CatalogController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $user = $request->user();
+        $user = $this->getUser($request);
         $rewardUser = $this->rewardService->getOrCreateRewardUser($user->id);
 
         $item = RewardCatalogItem::findOrFail($id);
@@ -80,7 +89,7 @@ class CatalogController extends Controller
      */
     public function redeem(Request $request, int $id): JsonResponse
     {
-        $user = $request->user();
+        $user = $this->getUser($request);
         $rewardUser = $this->rewardService->getOrCreateRewardUser($user->id);
 
         $item = RewardCatalogItem::findOrFail($id);

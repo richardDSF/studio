@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Rewards;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Services\Rewards\RewardService;
 use App\Services\Rewards\RedemptionService;
 use Illuminate\Http\JsonResponse;
@@ -18,11 +19,19 @@ class RedemptionController extends Controller
     ) {}
 
     /**
+     * Helper para obtener el usuario (autenticado o de prueba).
+     */
+    protected function getUser(Request $request): User
+    {
+        return $request->user() ?? User::firstOrFail();
+    }
+
+    /**
      * Lista las redenciones del usuario.
      */
     public function index(Request $request): JsonResponse
     {
-        $user = $request->user();
+        $user = $this->getUser($request);
         $rewardUser = $this->rewardService->getOrCreateRewardUser($user->id);
 
         $status = $request->input('status'); // pending, approved, rejected, delivered, cancelled
