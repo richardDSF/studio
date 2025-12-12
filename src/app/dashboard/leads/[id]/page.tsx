@@ -199,7 +199,7 @@ export default function LeadDetailPage() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                    <Button variant="outline" size="icon" onClick={() => router.back()}>
+                    <Button variant="outline" size="icon" onClick={() => router.push('/dashboard/clientes')}>
                         <ArrowLeft className="h-4 w-4" />
                     </Button>
                     <span>volver al CRM</span>
@@ -871,7 +871,7 @@ export default function LeadDetailPage() {
                                 </CardHeader>
                                 <CardContent>
                                     <DocumentManager 
-                                        personId={lead.id} 
+                                        personId={Number(lead.id)} 
                                         initialDocuments={(lead as any).documents || []} 
                                     />
                                 </CardContent>

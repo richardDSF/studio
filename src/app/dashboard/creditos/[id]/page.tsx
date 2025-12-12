@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, use } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   ArrowLeft,
   Paperclip,
@@ -10,14 +11,15 @@ import {
   PanelRightOpen,
   ClipboardCheck,
   Loader2,
+  Pencil,
+  Save,
+  X,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -38,6 +40,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Table,
   TableBody,
@@ -153,6 +157,7 @@ interface CreditItem {
   lead?: {
     id: number;
     name: string;
+    institucion_labora?: string | null;
     documents?: CreditDocument[];
   } | null;
   opportunity_id: string | null;
@@ -199,16 +204,20 @@ function formatCurrency(amount?: number | null): string {
 }
 
 function CreditDetailClient({ id }: { id: string }) {
+  const searchParams = useSearchParams();
   const [credit, setCredit] = useState<CreditItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [isPanelVisible, setIsPanelVisible] = useState(true);
-  const [selectedDocument, setSelectedDocument] = useState('pagare');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [formData, setFormData] = useState<Partial<CreditItem>>({});
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     const fetchCredit = async () => {
       try {
         const response = await api.get(`/api/credits/${id}`);
         setCredit(response.data);
+        setFormData(response.data);
       } catch (error) {
         console.error("Error fetching credit:", error);
       } finally {
@@ -217,6 +226,37 @@ function CreditDetailClient({ id }: { id: string }) {
     };
     fetchCredit();
   }, [id]);
+
+  useEffect(() => {
+    const editParam = searchParams.get('edit');
+    if (editParam === 'true') {
+      setIsEditMode(true);
+    }
+  }, [searchParams]);
+
+  const handleInputChange = (field: keyof CreditItem, value: any) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async () => {
+    if (!credit) return;
+    
+    setSaving(true);
+    try {
+      await api.put(`/api/credits/${credit.id}`, formData);
+      setCredit({ ...credit, ...formData });
+      setIsEditMode(false);
+    } catch (error) {
+      console.error("Error saving credit:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancel = () => {
+    setFormData(credit || {});
+    setIsEditMode(false);
+  };
 
   if (loading) {
     return <div className="flex h-full items-center justify-center p-8"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
@@ -249,12 +289,31 @@ function CreditDetailClient({ id }: { id: string }) {
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline">
-            <Link href={`/dashboard/creditos/${id}/balance`} target="_blank">
-              <FileText className="mr-2 h-4 w-4" />
-              Balance General
-            </Link>
-          </Button>
+          {!isEditMode ? (
+            <>
+              <Button variant="outline" onClick={() => setIsEditMode(true)}>
+                <Pencil className="mr-2 h-4 w-4" />
+                Editar
+              </Button>
+              <Button asChild variant="outline">
+                <Link href={`/dashboard/creditos/${id}/balance`} target="_blank">
+                  <FileText className="mr-2 h-4 w-4" />
+                  Balance General
+                </Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="outline" onClick={handleCancel} disabled={saving}>
+                <X className="mr-2 h-4 w-4" />
+                Cancelar
+              </Button>
+              <Button onClick={handleSave} disabled={saving}>
+                <Save className="mr-2 h-4 w-4" />
+                {saving ? "Guardando..." : "Guardar"}
+              </Button>
+            </>
+          )}
         </div>
       </div>
 
@@ -275,12 +334,12 @@ function CreditDetailClient({ id }: { id: string }) {
                       <div className="flex items-start justify-between">
                         <div>
                           <CardTitle>
-                            <Link href={`/dashboard/clientes/${credit.lead_id}`} className="hover:underline">
-                              {credit.client?.name || "Cliente Desconocido"}
+                            <Link href={`/dashboard/leads/${credit.lead_id}`} className="hover:underline">
+                              {credit.lead?.name || "Cliente Desconocido"}
                             </Link>
                           </CardTitle>
                           <CardDescription>
-                            Institución: {credit.client?.ocupacion || "-"}
+                            Institución: {credit.lead?.institucion_labora || "-"}
                           </CardDescription>
                         </div>
                         <div className="flex items-center gap-2">
@@ -311,40 +370,311 @@ function CreditDetailClient({ id }: { id: string }) {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-                      <div className="grid gap-1">
-                        <h3 className="font-medium">Monto Otorgado</h3>
-                        <p className="text-muted-foreground">
-                          ₡{formatCurrency(credit.monto_credito)}
-                        </p>
+                    <CardContent className="space-y-8">
+                      {/* Basic Information */}
+                      <div>
+                        <h3 className="text-lg font-medium mb-4">Información Básica</h3>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label>Número de Operación</Label>
+                            {isEditMode ? (
+                              <Input
+                                value={formData.numero_operacion || ""}
+                                onChange={(e) => handleInputChange("numero_operacion", e.target.value)}
+                                placeholder="Número de operación"
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.numero_operacion || credit.reference || "-"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Tipo de Crédito</Label>
+                            {isEditMode ? (
+                              <Input
+                                value={formData.tipo_credito || ""}
+                                onChange={(e) => handleInputChange("tipo_credito", e.target.value)}
+                                placeholder="Tipo de crédito"
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.tipo_credito || "-"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Categoría</Label>
+                            {isEditMode ? (
+                              <Select value={formData.category || ""} onValueChange={(value) => handleInputChange("category", value)}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Seleccionar categoría" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Regular">Regular</SelectItem>
+                                  <SelectItem value="Micro-crédito">Micro-crédito</SelectItem>
+                                  <SelectItem value="Hipotecario">Hipotecario</SelectItem>
+                                  <SelectItem value="Personal">Personal</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.category || "-"}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="grid gap-1">
-                        <h3 className="font-medium">Saldo Actual</h3>
-                        <p className="font-semibold text-primary">
-                          ₡{formatCurrency(credit.saldo)}
-                        </p>
+
+                      {/* Financial Details */}
+                      <div>
+                        <h3 className="text-lg font-medium mb-4">Detalles Financieros</h3>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label>Monto Otorgado</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={formData.monto_credito || ""}
+                                onChange={(e) => handleInputChange("monto_credito", parseFloat(e.target.value) || 0)}
+                                placeholder="Monto otorgado"
+                              />
+                            ) : (
+                              <p className="text-sm font-semibold text-primary bg-muted px-3 py-2 rounded-md">
+                                ₡{formatCurrency(credit.monto_credito)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Saldo Actual</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={formData.saldo || ""}
+                                onChange={(e) => handleInputChange("saldo", parseFloat(e.target.value) || 0)}
+                                placeholder="Saldo actual"
+                              />
+                            ) : (
+                              <p className="text-sm font-semibold text-primary bg-muted px-3 py-2 rounded-md">
+                                ₡{formatCurrency(credit.saldo)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Cuota Mensual</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={formData.cuota || ""}
+                                onChange={(e) => handleInputChange("cuota", parseFloat(e.target.value) || 0)}
+                                placeholder="Cuota mensual"
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                ₡{formatCurrency(credit.cuota)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Tasa Anual</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="number"
+                                step="0.01"
+                                value={formData.tasa_anual || ""}
+                                onChange={(e) => handleInputChange("tasa_anual", parseFloat(e.target.value) || 0)}
+                                placeholder="Tasa anual (%)"
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.tasa_anual ? `${credit.tasa_anual}%` : "-"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Divisa</Label>
+                            {isEditMode ? (
+                              <Select value={formData.divisa || "CRC"} onValueChange={(value) => handleInputChange("divisa", value)}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Seleccionar divisa" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="CRC">CRC - Colón Costarricense</SelectItem>
+                                  <SelectItem value="USD">USD - Dólar Estadounidense</SelectItem>
+                                  <SelectItem value="EUR">EUR - Euro</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.divisa || "CRC"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Entidad Deductora</Label>
+                            <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                              {credit.deductora?.nombre || "-"}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div className="grid gap-1">
-                        <h3 className="font-medium">Cuota Mensual</h3>
-                        <p className="text-muted-foreground">
-                          ₡{formatCurrency(credit.cuota)}
-                        </p>
+
+                      {/* Dates and Terms */}
+                      <div>
+                        <h3 className="text-lg font-medium mb-4">Fechas y Plazos</h3>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label>Fecha de Apertura</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="date"
+                                value={formData.opened_at ? new Date(formData.opened_at).toISOString().split('T')[0] : ""}
+                                onChange={(e) => handleInputChange("opened_at", e.target.value)}
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {formatDate(credit.opened_at)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Fecha de Culminación</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="date"
+                                value={formData.fecha_culminacion_credito ? new Date(formData.fecha_culminacion_credito).toISOString().split('T')[0] : ""}
+                                onChange={(e) => handleInputChange("fecha_culminacion_credito", e.target.value)}
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {formatDate(credit.fecha_culminacion_credito)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Último Pago</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="date"
+                                value={formData.fecha_ultimo_pago ? new Date(formData.fecha_ultimo_pago).toISOString().split('T')[0] : ""}
+                                onChange={(e) => handleInputChange("fecha_ultimo_pago", e.target.value)}
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {formatDate(credit.fecha_ultimo_pago)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Primera Deducción</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="date"
+                                value={formData.primera_deduccion ? new Date(formData.primera_deduccion).toISOString().split('T')[0] : ""}
+                                onChange={(e) => handleInputChange("primera_deduccion", e.target.value)}
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {formatDate(credit.primera_deduccion)}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Plazo</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="number"
+                                value={formData.plazo || ""}
+                                onChange={(e) => handleInputChange("plazo", parseInt(e.target.value) || 0)}
+                                placeholder="Plazo en meses"
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.plazo ? `${credit.plazo} meses` : "-"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Cuotas Atrasadas</Label>
+                            {isEditMode ? (
+                              <Input
+                                type="number"
+                                value={formData.cuotas_atrasadas || ""}
+                                onChange={(e) => handleInputChange("cuotas_atrasadas", parseInt(e.target.value) || 0)}
+                                placeholder="Cuotas atrasadas"
+                              />
+                            ) : (
+                              <p className="text-sm font-semibold text-destructive bg-muted px-3 py-2 rounded-md">
+                                {credit.cuotas_atrasadas || 0}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div className="grid gap-1">
-                        <h3 className="font-medium">Tasa / Plazo</h3>
-                        <p className="text-muted-foreground">
-                          {credit.tasa_anual}% / {credit.plazo} meses
-                        </p>
-                      </div>
-                      <div className="grid gap-1">
-                        <h3 className="font-medium">Cuotas Atrasadas</h3>
-                        <p className="font-semibold text-destructive">
-                          {credit.cuotas_atrasadas || 0}
-                        </p>
-                      </div>
-                      <div className="grid gap-1">
-                        <h3 className="font-medium">Entidad Deductora</h3>
-                        <p className="text-muted-foreground">{credit.deductora?.nombre || "-"}</p>
+
+                      {/* Additional Information */}
+                      <div>
+                        <h3 className="text-lg font-medium mb-4">Información Adicional</h3>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          <div className="space-y-2">
+                            <Label>Estado</Label>
+                            {isEditMode ? (
+                              <Select value={formData.status || ""} onValueChange={(value) => handleInputChange("status", value)}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Seleccionar estado" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Activo">Activo</SelectItem>
+                                  <SelectItem value="Mora">Mora</SelectItem>
+                                  <SelectItem value="Cerrado">Cerrado</SelectItem>
+                                  <SelectItem value="Legal">Legal</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.status || "-"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Responsable</Label>
+                            <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                              {credit.assigned_to || "-"}
+                            </p>
+                          </div>
+                          <div className="space-y-2">
+                            <Label>Garantía</Label>
+                            {isEditMode ? (
+                              <Input
+                                value={formData.garantia || ""}
+                                onChange={(e) => handleInputChange("garantia", e.target.value)}
+                                placeholder="Garantía"
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.garantia || "-"}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2 md:col-span-2">
+                            <Label>Descripción</Label>
+                            {isEditMode ? (
+                              <Textarea
+                                value={formData.description || ""}
+                                onChange={(e) => handleInputChange("description", e.target.value)}
+                                placeholder="Descripción del crédito"
+                                rows={3}
+                              />
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md min-h-[60px]">
+                                {credit.description || "-"}
+                              </p>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

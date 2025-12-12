@@ -260,9 +260,11 @@ export default function CreditsPage() {
   const [credits, setCredits] = useState<CreditItem[]>([]);
   const [leads, setLeads] = useState<ClientOption[]>([]);
   const [opportunities, setOpportunities] = useState<OpportunityOption[]>([]);
+  const [users, setUsers] = useState<{id: number, name: string}[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingLeads, setIsLoadingLeads] = useState(true);
   const [isLoadingOpportunities, setIsLoadingOpportunities] = useState(true);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [tabValue, setTabValue] = useState("all");
   const [filters, setFilters] = useState({
     monto: "",
@@ -400,11 +402,24 @@ export default function CreditsPage() {
     }
   }, []);
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      setIsLoadingUsers(true);
+      const response = await api.get('/api/agents');
+      setUsers(response.data);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchCredits();
     fetchLeads();
     fetchOpportunities();
-  }, [fetchCredits, fetchLeads, fetchOpportunities]);
+    fetchUsers();
+  }, [fetchCredits, fetchLeads, fetchOpportunities, fetchUsers]);
 
   // Cleanup drag event listeners on unmount
 
@@ -898,11 +913,13 @@ export default function CreditsPage() {
                               <Button
                                 variant="outline"
                                 size="icon"
-                                onClick={() => { setStatusCredit(credit); setStatusForm({ status: credit.status || "Abierto" }); setIsStatusOpen(true); }}
-                                title="Actualizar estado"
-                                className="border-blue-500 text-blue-500 hover:bg-blue-50 hover:text-blue-600"
+                                asChild
+                                title="Editar crédito"
+                                className="border-green-500 text-green-500 hover:bg-green-50 hover:text-green-600"
                               >
-                                <Pencil className="h-4 w-4" />
+                                <Link href={`/dashboard/creditos/${credit.id}?edit=true`}>
+                                  <Pencil className="h-4 w-4" />
+                                </Link>
                               </Button>
 
                               {/* Export visible button with dropdown (CSV / PDF) */}
@@ -1094,12 +1111,16 @@ export default function CreditsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="assignedTo">Responsable</Label>
-                <Input
-                  id="assignedTo"
-                  placeholder="Nombre del responsable"
-                  value={formValues.assignedTo}
-                  onChange={e => setFormValues({ ...formValues, assignedTo: e.target.value })}
-                />
+                <Select value={formValues.assignedTo} onValueChange={v => setFormValues({ ...formValues, assignedTo: v })}>
+                  <SelectTrigger id="assignedTo">
+                    <SelectValue placeholder="Selecciona un responsable" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map(user => (
+                      <SelectItem key={user.id} value={user.name}>{user.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="openedAt">Fecha Apertura</Label>

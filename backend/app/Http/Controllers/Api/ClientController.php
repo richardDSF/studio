@@ -103,6 +103,20 @@ class ClientController extends Controller
             'institucion_labora' => 'nullable|string|max:255',
             'departamento_cargo' => 'nullable|string|max:255',
             'deductora_id' => 'nullable|exists:deductoras,id',
+            'cedula_vencimiento' => 'nullable|date',
+            'nivel_academico' => 'nullable|string|max:255',
+            'profesion' => 'nullable|string|max:255',
+            'sector' => 'nullable|string|max:255',
+            'puesto' => 'nullable|string|max:255',
+            'estado_puesto' => 'nullable|string|max:255',
+            'trabajo_provincia' => 'nullable|string|max:255',
+            'trabajo_canton' => 'nullable|string|max:255',
+            'trabajo_distrito' => 'nullable|string|max:255',
+            'trabajo_direccion' => 'nullable|string',
+            'institucion_direccion' => 'nullable|string',
+            'actividad_economica' => 'nullable|string|max:255',
+            'tipo_sociedad' => 'nullable|string|max:255',
+            'nombramientos' => 'nullable|string',
         ]);
 
         $validated['is_active'] = $validated['is_active'] ?? true;
@@ -149,6 +163,20 @@ class ClientController extends Controller
             'institucion_labora' => 'sometimes|nullable|string|max:255',
             'departamento_cargo' => 'sometimes|nullable|string|max:255',
             'deductora_id' => 'sometimes|nullable|exists:deductoras,id',
+            'cedula_vencimiento' => 'sometimes|nullable|date',
+            'nivel_academico' => 'sometimes|nullable|string|max:255',
+            'profesion' => 'sometimes|nullable|string|max:255',
+            'sector' => 'sometimes|nullable|string|max:255',
+            'puesto' => 'sometimes|nullable|string|max:255',
+            'estado_puesto' => 'sometimes|nullable|string|max:255',
+            'trabajo_provincia' => 'sometimes|nullable|string|max:255',
+            'trabajo_canton' => 'sometimes|nullable|string|max:255',
+            'trabajo_distrito' => 'sometimes|nullable|string|max:255',
+            'trabajo_direccion' => 'sometimes|nullable|string',
+            'institucion_direccion' => 'sometimes|nullable|string',
+            'actividad_economica' => 'sometimes|nullable|string|max:255',
+            'tipo_sociedad' => 'sometimes|nullable|string|max:255',
+            'nombramientos' => 'sometimes|nullable|string',
         ]);
 
         $client->update($validated);
