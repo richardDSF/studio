@@ -115,7 +115,7 @@ export function DocumentManager({ personId, initialDocuments = [], readonly = fa
     <div className="space-y-4">
       {!readonly && (
         <div className="flex items-center gap-4">
-          <div className="grid w-full max-w-sm items-center gap-1.5 hover:bg-muted/50 transition-colors cursor-pointer">
+          <div className="grid w-full max-w-sm items-center gap-1.5 transition-colors cursor-pointer">
             <Label htmlFor="document-upload">Subir Documento</Label>
             <Input className='cursor-pointer' id="document-upload" type="file" onChange={handleFileUpload} disabled={uploading} />
           </div>

@@ -211,6 +211,8 @@ function CreditDetailClient({ id }: { id: string }) {
   const [isEditMode, setIsEditMode] = useState(false);
   const [formData, setFormData] = useState<Partial<CreditItem>>({});
   const [saving, setSaving] = useState(false);
+  const [users, setUsers] = useState<{id: number, name: string}[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(true);
 
   useEffect(() => {
     const fetchCredit = async () => {
@@ -233,6 +235,21 @@ function CreditDetailClient({ id }: { id: string }) {
       setIsEditMode(true);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        setIsLoadingUsers(true);
+        const response = await api.get('/api/agents');
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      } finally {
+        setIsLoadingUsers(false);
+      }
+    };
+    fetchUsers();
+  }, []);
 
   const handleInputChange = (field: keyof CreditItem, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -641,9 +658,22 @@ function CreditDetailClient({ id }: { id: string }) {
                           </div>
                           <div className="space-y-2">
                             <Label>Responsable</Label>
-                            <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
-                              {credit.assigned_to || "-"}
-                            </p>
+                            {isEditMode ? (
+                              <Select value={formData.assigned_to || ""} onValueChange={(value) => handleInputChange("assigned_to", value)}>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Seleccionar responsable" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {users.map(user => (
+                                    <SelectItem key={user.id} value={user.name}>{user.name}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <p className="text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md">
+                                {credit.assigned_to || "-"}
+                              </p>
+                            )}
                           </div>
                           <div className="space-y-2">
                             <Label>Garantía</Label>
