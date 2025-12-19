@@ -1081,14 +1081,21 @@ export default function CreditsPage() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="plazo">Plazo (Meses)</Label>
-                <Select value={formValues.plazo} onValueChange={v => setFormValues({ ...formValues, plazo: v })}>
-                  <SelectTrigger id="plazo"><SelectValue placeholder="Selecciona el plazo" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="36">36 meses</SelectItem>
-                    <SelectItem value="60">60 meses</SelectItem>
-                    <SelectItem value="120">120 meses</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Input
+                    id="plazo"
+                    type="number"
+                    min={1}
+                    max={120}
+                    value={formValues.plazo}
+                    onChange={e => {
+                      let value = e.target.value;
+                      // Limitar el valor entre 1 y 120
+                      if (Number(value) < 1) value = "1";
+                      if (Number(value) > 120) value = "120";
+                      setFormValues({ ...formValues, plazo: value });
+                    }}
+                    placeholder="Plazo en meses"
+                  />
               </div>
               <div className="space-y-2 flex flex-col">
                 <Label htmlFor="lead">Lead</Label>

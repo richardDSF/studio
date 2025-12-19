@@ -25,6 +25,7 @@ import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/axios";
 import { Opportunity, chatMessages, OPPORTUNITY_STATUSES, OPPORTUNITY_TYPES } from "@/lib/data";
 import { DocumentManager } from "@/components/document-manager";
+import { CaseChat } from "@/components/case-chat";
 
 export default function OpportunityDetailPage() {
   const params = useParams();
@@ -139,7 +140,7 @@ export default function OpportunityDetailPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
         {/* Main Content - Left Column (Refactored with Archivos as main tab) */}
         <div className="lg:col-span-3 space-y-6">
           <Tabs defaultValue="resumen" className="w-full">
@@ -264,53 +265,9 @@ export default function OpportunityDetailPage() {
           </Tabs>
         </div>
 
-        {/* Side Panel - Right Column: Only comunicaciones */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="border shadow-sm h-[600px] flex flex-col">
-            <div className="p-3 border-b">
-              <div className="flex gap-2 bg-slate-100 p-1 rounded-md w-fit">
-                <Button variant="ghost" size="sm" className="h-7 px-3 bg-white shadow-sm text-xs font-medium">
-                  <List className="h-3 w-3 mr-1.5" />
-                  Todo
-                </Button>
-                <Button variant="ghost" size="sm" className="h-7 px-3 text-muted-foreground text-xs font-medium hover:bg-white/50">
-                  <MessageSquare className="h-3 w-3 mr-1.5" />
-                  Mensajes
-                </Button>
-                <Button variant="ghost" size="sm" className="h-7 px-3 text-muted-foreground text-xs font-medium hover:bg-white/50">
-                  <MessageCircle className="h-3 w-3 mr-1.5" />
-                  Comentarios
-                </Button>
-              </div>
-            </div>
-            <div className="p-4 border-b bg-slate-50/30">
-              <div className="relative rounded-lg border bg-white shadow-sm focus-within:ring-1 focus-within:ring-primary">
-                <Input 
-                  className="border-0 focus-visible:ring-0 px-4 py-3 h-auto text-sm" 
-                  placeholder="Escribe tu mensaje..." 
-                />
-                <div className="flex items-center justify-between px-2 pb-2 pt-1">
-                  <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                      <Paperclip className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
-                      <Smile className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Button size="icon" className="h-8 w-8 bg-slate-400 hover:bg-slate-500">
-                    <Send className="h-4 w-4 text-white" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/30">
-               {/* Placeholder for empty state or messages */}
-               <div className="h-full flex flex-col items-center justify-center text-muted-foreground text-sm">
-                  <p>No hay comunicaciones recientes</p>
-               </div>
-            </div>
-          </Card>
+        {/* Side Panel - Chat lateral igual que leads */}
+        <div className="space-y-1 lg:col-span-1">
+          <CaseChat conversationId={id} />
         </div>
       </div>
     </div>
