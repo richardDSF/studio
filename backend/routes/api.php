@@ -83,6 +83,9 @@ Route::post('credit-payments/adelanto', [CreditPaymentController::class, 'adelan
 // Analisis CRUD
 Route::apiResource('analisis', \App\Http\Controllers\Api\AnalisisController::class);
 
+// Enterprise Employee Documents CRUD
+Route::apiResource('enterprise-employee-documents', \App\Http\Controllers\Api\EnterpriseEmployeeDocumentController::class);
+
 // --- Rewards / Gamificación (Público temporalmente) ---
 Route::prefix('rewards')->group(function () {
     // Perfil y balance
