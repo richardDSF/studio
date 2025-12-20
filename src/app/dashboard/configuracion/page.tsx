@@ -169,6 +169,84 @@ interface Deductora {
   comision: number | null;
 }
 
+const EmpresasTable: React.FC = () => {
+  const [empresas, setEmpresas] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(false);
+  const { token } = useAuth();
+
+  React.useEffect(() => {
+    const fetchEmpresas = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get('/api/enterprises', {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        });
+        setEmpresas(res.data);
+      } catch (err) {
+        setEmpresas([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEmpresas();
+  }, [token]);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Lista de Empresas</CardTitle>
+        <CardDescription>Visualiza todas las empresas registradas.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <div className="flex justify-center p-8">
+            <Loader2 className="animate-spin" />
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Requerimientos</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {empresas.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center text-muted-foreground">
+                    No hay empresas registradas.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                empresas.map((empresa: any) => (
+                  <TableRow key={empresa.id}>
+                    <TableCell>{empresa.id}</TableCell>
+                    <TableCell>{empresa.business_name}</TableCell>
+                    <TableCell>
+                      {empresa.requirements && empresa.requirements.length > 0 ? (
+                        <ul className="list-disc pl-4">
+                          {empresa.requirements.map((req: any, idx: number) => (
+                            <li key={idx}>
+                              {req.file_extension} ({req.upload_date})
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">Sin requerimientos</span>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
+
 export default function ConfiguracionPage() {
   const { toast } = useToast();
   const { token } = useAuth();
@@ -533,17 +611,28 @@ export default function ConfiguracionPage() {
         <TabsTrigger value="tasa_actual">Tasa Actual</TabsTrigger>
       </TabsList>
 
+
       <TabsContent value="empresas">
-        <Card>
-          <CardHeader>
-            <CardTitle>Empresas</CardTitle>
-            <CardDescription>Agrega una nueva empresa y selecciona los tipos asociados.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* AQUÍ LLAMAMOS AL COMPONENTE EXTERNO, NO LO DEFINIMOS DENTRO */}
-            <EnterpriseCreateForm />
-          </CardContent>
-        </Card>
+        <Tabs defaultValue="crud" className="w-full">
+          <TabsList className="mb-4">
+            <TabsTrigger value="crud">CRUD</TabsTrigger>
+            <TabsTrigger value="tabla">Tabla</TabsTrigger>
+          </TabsList>
+          <TabsContent value="crud">
+            <Card>
+              <CardHeader>
+                <CardTitle>Empresas</CardTitle>
+                <CardDescription>Agrega una nueva empresa y selecciona los tipos asociados.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <EnterpriseCreateForm />
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value="tabla">
+            <EmpresasTable />
+          </TabsContent>
+        </Tabs>
       </TabsContent>
 
       <TabsContent value="tasa_actual">
