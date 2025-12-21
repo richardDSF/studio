@@ -20,11 +20,10 @@ class EnterpriseRequirementSeeder extends Seeder
             foreach ($tipos as $tipo) {
                 foreach ($extensiones as $ext) {
                     EnterprisesRequirement::updateOrCreate([
-                        'enterprise_id' ,
-                        'name' ,
-                        'file_extension',
+                        'enterprise_id' => $enterprise->id,
+                        'name' => $tipo,
+                        'file_extension' => $ext,
                     ], [
-                         $tipo,
                         'upload_date' => $fecha,
                         'last_updated' => $fecha,
                     ]);
