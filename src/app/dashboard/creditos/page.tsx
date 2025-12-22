@@ -922,30 +922,6 @@ export default function CreditsPage() {
                           <TableRow key={credit.id}>
                             <TableCell>
                               <Badge variant="secondary">{credit.status}</Badge>
-                              {credit.status !== 'Formalizado' && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  className="ml-2"
-                                  onClick={async () => {
-                                    try {
-                                      await api.put(`/api/credits/${credit.id}`, { status: 'Formalizado' });
-                                      toast({
-                                        title: 'Crédito formalizado',
-                                        description: 'El plan de pagos se ha generado correctamente.',
-                                      });
-                                      fetchCredits();
-                                    } catch (error) {
-                                      console.error('Error formalizando crédito:', error);
-                                      toast({
-                                        title: 'Error',
-                                        description: 'No se pudo formalizar el crédito.',
-                                        variant: 'destructive',
-                                      });
-                                    }
-                                  }}
-                                >Formalizar</Button>
-                              )}
                             </TableCell>
                             <TableCell>{credit.client?.name || credit.lead?.name || "-"}</TableCell>
                             <TableCell className="font-medium">
@@ -1020,6 +996,29 @@ export default function CreditsPage() {
                                   </DropdownMenuTrigger>
                                   <DropdownMenuContent align="end">
                                     <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                                    {credit.status !== 'Formalizado' && (
+                                      <DropdownMenuItem
+                                        onClick={async () => {
+                                          try {
+                                            await api.put(`/api/credits/${credit.id}`, { status: 'Formalizado' });
+                                            toast({
+                                              title: 'Crédito formalizado',
+                                              description: 'El plan de pagos se ha generado correctamente.',
+                                            });
+                                            fetchCredits();
+                                          } catch (error) {
+                                            console.error('Error formalizando crédito:', error);
+                                            toast({
+                                              title: 'Error',
+                                              description: 'No se pudo formalizar el crédito.',
+                                              variant: 'destructive',
+                                            });
+                                          }
+                                        }}
+                                      >
+                                        Formalizar crédito
+                                      </DropdownMenuItem>
+                                    )}
                                     <DropdownMenuItem onClick={() => { setDocumentsCredit(credit); setIsDocumentsOpen(true); }}>
                                       Gestionar documentos
                                     </DropdownMenuItem>

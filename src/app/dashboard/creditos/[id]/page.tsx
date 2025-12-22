@@ -363,13 +363,31 @@ function CreditDetailClient({ id }: { id: string }) {
 
   const handleSave = async () => {
     if (!credit) return;
-    
+
+    const previousStatus = credit.status;
+    const isFormalizingCredit = formData.status === 'Formalizado' && previousStatus !== 'Formalizado';
+
     setSaving(true);
     try {
-      await api.put(`/api/credits/${credit.id}`, formData);
-      setCredit({ ...credit, ...formData });
+      const response = await api.put(`/api/credits/${credit.id}`, formData);
+      setCredit(response.data);
+      setFormData(response.data);
       setIsEditMode(false);
-      toast({ title: "Éxito", description: "Crédito actualizado correctamente" });
+
+      if (isFormalizingCredit) {
+        toast({
+          title: "Crédito formalizado",
+          description: "El plan de pagos se ha generado correctamente."
+        });
+      } else {
+        toast({
+          title: "Éxito",
+          description: "Crédito actualizado correctamente"
+        });
+      }
+
+      // Recargar el crédito para obtener el plan de pagos actualizado
+      await fetchCredit();
     } catch (error) {
       console.error("Error saving credit:", error);
       toast({ title: "Error", description: "No se pudo guardar los cambios", variant: "destructive" });
@@ -758,6 +776,8 @@ function CreditDetailClient({ id }: { id: string }) {
                                   <SelectValue placeholder="Seleccionar estado" />
                                 </SelectTrigger>
                                 <SelectContent>
+                                  <SelectItem value="Aprobado">Aprobado</SelectItem>
+                                  <SelectItem value="Formalizado">Formalizado</SelectItem>
                                   <SelectItem value="Activo">Activo</SelectItem>
                                   <SelectItem value="Mora">Mora</SelectItem>
                                   <SelectItem value="Cerrado">Cerrado</SelectItem>
