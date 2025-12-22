@@ -48,3 +48,6 @@ firestore-debug.log
 # local images
 
 *.jpg
+GEMINI.md
+
+CLAUDE.md
