@@ -72,7 +72,7 @@ class Credit extends Model
         static::created(function ($credit) {
             // Aseguramos que al crear, el saldo inicial sea igual al monto del crédito
             if (!isset($credit->saldo)) {
-                $credit->saldo = $credit->monto_credito;
+                $credit->saldo = $credit->monto_credito ?? 0;
                 $credit->saveQuietly();
             }
 
