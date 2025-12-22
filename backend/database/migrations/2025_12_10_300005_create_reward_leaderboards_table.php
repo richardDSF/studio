@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('reward_leaderboards');
         Schema::create('reward_leaderboards', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique();

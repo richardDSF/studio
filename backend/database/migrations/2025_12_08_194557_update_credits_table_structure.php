@@ -12,6 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('credits');
         Schema::create('credits', function (Blueprint $table) {
             $table->id();
             $table->string('reference')->unique();

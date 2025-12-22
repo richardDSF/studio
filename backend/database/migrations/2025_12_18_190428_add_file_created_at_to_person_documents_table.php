@@ -12,6 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('person_documents');
         Schema::create('person_documents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('person_id')->constrained('persons')->onDelete('cascade');
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->string('url')->nullable();
             $table->string('mime_type')->nullable();
             $table->integer('size')->nullable();
-            $table->timestamp('file_created_at')->nullable()->after('size');
+            $table->timestamp('file_created_at')->nullable();
             $table->timestamps();
         });
     }

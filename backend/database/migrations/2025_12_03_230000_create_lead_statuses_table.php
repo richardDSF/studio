@@ -11,17 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('lead_statuses')) {
-            Schema::create('lead_statuses', function (Blueprint $table) {
-                $table->id();
-                $table->string('name', 150)->unique();
-                $table->string('slug')->index();
-                $table->string('description')->nullable();
-                $table->boolean('is_default')->default(false);
-                $table->integer('order_column')->default(0);
-                $table->timestamps();
-            });
-        }
+        Schema::dropIfExists('lead_statuses');
+        Schema::create('lead_statuses', function (Blueprint $table) {
+            $table->id();
+            $table->string('name', 150)->unique();
+            $table->string('slug')->index();
+            $table->string('description')->nullable();
+            $table->boolean('is_default')->default(false);
+            $table->integer('order_column')->default(0);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -32,3 +31,4 @@ return new class extends Migration
         Schema::dropIfExists('lead_statuses');
     }
 };
+
