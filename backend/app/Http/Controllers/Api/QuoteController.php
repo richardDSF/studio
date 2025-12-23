@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Mail\QuoteMail;
+use App\Models\ChatMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -60,16 +61,46 @@ class QuoteController extends Controller
                 ], 200);
             }
 
-            // Si el método es comunicaciones (placeholder para integración futura)
+            // Si el método es comunicaciones, crear mensaje en el chat
             if ($data['method'] === 'comunicaciones') {
-                // TODO: Integrar con sistema de comunicaciones
-                // Por ahora solo devolvemos success
+                // Formatear el mensaje de cotización
+                $messageText = sprintf(
+                    "📊 Cotización de %s\n\n" .
+                    "Monto solicitado: ₡%s\n" .
+                    "Tasa de interés: %s%%\n" .
+                    "Plazo: %d meses\n\n" .
+                    "💰 Cuota Mensual Estimada: ₡%s\n\n" .
+                    "Esta cotización es una estimación preliminar. Los términos finales están sujetos a aprobación.",
+                    $data['credit_type'] === 'regular' ? 'Crédito Regular' : 'Micro-crédito',
+                    number_format($data['amount'], 2, ',', '.'),
+                    $data['rate'],
+                    $data['term'],
+                    number_format($data['monthly_payment'], 2, ',', '.')
+                );
+
+                // Crear el mensaje en la base de datos
+                $chatMessage = ChatMessage::create([
+                    'conversation_id' => $data['lead_id'],
+                    'sender_type' => 'system',
+                    'sender_name' => 'Sistema de Cotizaciones',
+                    'text' => $messageText,
+                    'message_type' => 'quote',
+                    'metadata' => [
+                        'amount' => $data['amount'],
+                        'rate' => $data['rate'],
+                        'term' => $data['term'],
+                        'monthly_payment' => $data['monthly_payment'],
+                        'credit_type' => $data['credit_type'],
+                    ],
+                ]);
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Cotización enviada exitosamente por sistema de comunicaciones.',
                     'data' => [
                         'recipient' => $data['lead_name'],
-                        'method' => 'comunicaciones'
+                        'method' => 'comunicaciones',
+                        'message_id' => $chatMessage->id,
                     ]
                 ], 200);
             }

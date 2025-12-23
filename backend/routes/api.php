@@ -84,6 +84,10 @@ Route::post('credit-payments/adelanto', [CreditPaymentController::class, 'adelan
 // Cotizaciones
 Route::post('quotes/send', [\App\Http\Controllers\Api\QuoteController::class, 'sendQuote']);
 
+// Chat Messages
+Route::get('chat-messages', [\App\Http\Controllers\Api\ChatMessageController::class, 'index']);
+Route::post('chat-messages', [\App\Http\Controllers\Api\ChatMessageController::class, 'store']);
+
 // Analisis CRUD
 Route::apiResource('analisis', \App\Http\Controllers\Api\AnalisisController::class);
 
