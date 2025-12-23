@@ -1,7 +1,6 @@
 // 'use client' indica que es un Componente de Cliente, lo que permite el uso de interactividad y estado.
 'use client';
 
-import React from 'react';
 import {
   List,
   MessageCircle,
@@ -155,11 +154,13 @@ function CombinedChatList({
       {/* Iteramos sobre el array combinado y renderizamos cada item según su tipo. */}
       {combined.map((item, index) => {
         if (item.type === 'message') {
-          const msg = item as ChatMessage & { date: Date };
-          return <ChatMessagesList key={`msg-${index}`} messages={[msg]} />;
+          // Extraemos las propiedades del mensaje original (sin 'type' y 'date')
+          const { type, date, ...msgProps } = item;
+          return <ChatMessagesList key={`msg-${index}`} messages={[msgProps as ChatMessage]} />;
         } else {
-          const note = item as InternalNote & { date: Date };
-          return <InternalNotesList key={`note-${index}`} notes={[note]} />;
+          // Extraemos las propiedades de la nota original (sin 'type' y 'date')
+          const { type, date, ...noteProps } = item;
+          return <InternalNotesList key={`note-${index}`} notes={[noteProps as InternalNote]} />;
         }
       })}
     </div>
@@ -181,8 +182,8 @@ export function CaseChat({ conversationId }: { conversationId: string }) {
   );
 
   return (
-    <div className="flex h-full flex-col p-2">
-        <Tabs defaultValue="all" className="flex flex-1 flex-col">
+    <div className="flex flex-col rounded-lg border bg-card">
+        <Tabs defaultValue="all" className="flex flex-col h-[600px]">
           {/* Lista de pestañas para cambiar entre vistas. */}
           <TabsList className="mx-2 mt-2">
             <TabsTrigger value="all" className="gap-1">
@@ -201,7 +202,7 @@ export function CaseChat({ conversationId }: { conversationId: string }) {
           {/* Contenido de la pestaña "Todo". */}
           <TabsContent
             value="all"
-            className="flex-1 space-y-4 overflow-y-auto p-4"
+            className="flex-1 space-y-4 overflow-y-auto p-4 min-h-0"
           >
             <CombinedChatList
               messages={relevantMessages}
@@ -211,14 +212,14 @@ export function CaseChat({ conversationId }: { conversationId: string }) {
           {/* Contenido de la pestaña "Mensajes". */}
           <TabsContent
             value="messages"
-            className="flex-1 space-y-4 overflow-y-auto p-4"
+            className="flex-1 space-y-4 overflow-y-auto p-4 min-h-0"
           >
             <ChatMessagesList messages={relevantMessages} />
           </TabsContent>
           {/* Contenido de la pestaña "Comentarios". */}
           <TabsContent
             value="comments"
-            className="flex-1 space-y-4 overflow-y-auto p-4"
+            className="flex-1 space-y-4 overflow-y-auto p-4 min-h-0"
           >
             <InternalNotesList notes={relevantNotes} />
           </TabsContent>
