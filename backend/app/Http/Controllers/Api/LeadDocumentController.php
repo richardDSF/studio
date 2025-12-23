@@ -24,7 +24,7 @@ class LeadDocumentController extends Controller
     public function checkCedulaFolder(Request $request)
     {
         $request->validate([
-            'cedula' => 'required|string|min:9|max:20',
+            'cedula' => 'required|string|max:20',
         ]);
 
         $cedula = preg_replace('/[^0-9]/', '', $request->input('cedula'));
@@ -135,7 +135,7 @@ class LeadDocumentController extends Controller
     public function createCedulaFolder(Request $request)
     {
         $request->validate([
-            'cedula' => 'required|string|min:9|max:20',
+            'cedula' => 'required|string|max:20',
             'files' => 'required|array|min:1',
             'files.*' => 'required|string',
         ]);
