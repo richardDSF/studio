@@ -47,8 +47,8 @@ Route::get('/lead-statuses', function () {
 // Leads
 Route::patch('/leads/{id}/toggle-active', [LeadController::class, 'toggleActive']);
 Route::post('/leads/{id}/convert', [LeadController::class, 'convertToClient']);
-Route::apiResource('leads', LeadController::class);
 Route::get('/leads/check-cedula-folder', [LeadDocumentController::class, 'checkCedulaFolder']);
+Route::apiResource('leads', LeadController::class);
 Route::post('/leads/create-cedula-folder', [LeadDocumentController::class, 'createCedulaFolder']);
 Route::post('/leads/{lead}/documents', [LeadDocumentController::class, 'store']);
 Route::get('/leads/{lead}/documents', [LeadDocumentController::class, 'index']);
@@ -58,7 +58,6 @@ Route::get('/clients/check-cedula-folder', [\App\Http\Controllers\Api\ClientDocu
 Route::apiResource('clients', ClientController::class);
 Route::post('/opportunities/{id}/move-files', [OpportunityController::class, 'moveFiles']);
 Route::get('/opportunities/{id}/files', [OpportunityController::class, 'getFiles']);
-Route::get('/leads/check-cedula-folder', [LeadDocumentController::class, 'checkCedulaFolder']);
 // Oportunidades
 Route::apiResource('opportunities', OpportunityController::class);
 
