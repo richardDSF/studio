@@ -458,7 +458,7 @@ export default function ClientesPage() {
   }, [handleTseLookup, isFetchingTse, lastTseCedula, cedulaValue]);
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ''); 
+    let value = e.target.value.replace(/\D/g, '');
     if (value.length > 8) value = value.slice(0, 8);
 
     let formattedValue = '';
@@ -470,7 +470,7 @@ export default function ClientesPage() {
       formattedValue = value;
     }
 
-    form.setValue("fechaNacimiento", formattedValue);
+    return formattedValue;
   };
 
   const onSubmit = async (values: LeadFormValues) => {
@@ -967,8 +967,8 @@ export default function ClientesPage() {
                           maxLength={10}
                           {...field}
                           onChange={(e) => {
-                            handleDateChange(e);
-                            field.onChange(e); // Propagate to react-hook-form
+                            const formattedValue = handleDateChange(e);
+                            field.onChange(formattedValue);
                           }}
                         />
                       </FormControl>
