@@ -155,7 +155,9 @@ export default function CalculosPage() {
       const creditsList = Array.isArray(response.data) ? response.data : response.data.data || [];
 
       // Buscamos el crédito por número de operación (ignorando mayúsculas/minúsculas)
+      // El campo principal es 'reference', pero mantenemos compatibilidad con 'numero_operacion'
       const credit = creditsList.find((c: Credit) =>
+        c.reference?.toLowerCase() === operationNumber.toLowerCase() ||
         c.numero_operacion?.toLowerCase() === operationNumber.toLowerCase()
       );
 
@@ -401,7 +403,7 @@ export default function CalculosPage() {
                 id="operation-number"
                 value={operationNumber}
                 onChange={(e) => setOperationNumber(e.target.value)}
-                placeholder="Ej: CR-002"
+                placeholder="Ej: 25-00001-CR"
                 disabled={searchingCredit}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !searchingCredit) {
@@ -438,7 +440,7 @@ export default function CalculosPage() {
               <div className="space-y-4 rounded-lg border bg-muted/50 p-4">
                   <div>
                       <h4 className="font-semibold">{foundCredit.lead?.name || 'Cliente sin nombre'}</h4>
-                      <p className="text-sm text-muted-foreground">{foundCredit.numero_operacion}</p>
+                      <p className="text-sm text-muted-foreground">{foundCredit.reference || foundCredit.numero_operacion}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>
