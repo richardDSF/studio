@@ -7,7 +7,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -22,10 +21,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 // Importamos los íconos que usaremos.
-import { Calculator, Search, RefreshCw, MessageSquare, Mail, CheckCircle } from 'lucide-react';
-// $$$ CONECTOR MYSQL: Se importan los datos de ejemplo de créditos, leads y la configuración de créditos.
-// En el futuro, estos datos vendrán de la base de datos y del sistema de configuración.
-import { credits, Credit, leads, Lead, creditConfigs } from '@/lib/data';
+import { Calculator, Search, RefreshCw, MessageSquare, Mail } from 'lucide-react';
+// $$$ CONECTOR MYSQL: Se importan los datos de ejemplo de leads y la configuración de créditos.
+// Los créditos ahora se obtienen de la API en tiempo real.
+import { Credit, leads, creditConfigs } from '@/lib/data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from '@/components/ui/separator';
@@ -54,6 +53,7 @@ export default function CalculosPage() {
   const [newTerm, setNewTerm] = useState('12'); // Nuevo plazo para el arreglo
   const [newMonthlyPayment, setNewMonthlyPayment] = useState<number | null>(null); // Nueva cuota calculada
   const [searchError, setSearchError] = useState<string | null>(null); // Mensaje de error si no se encuentra el crédito
+  const [searchingCredit, setSearchingCredit] = useState(false); // Estado de carga para la búsqueda
 
   // --- Opportunity Search State ---
   const [opportunitySearch, setOpportunitySearch] = useState('');
@@ -132,19 +132,60 @@ export default function CalculosPage() {
   };
 
   /**
-   * Busca un crédito existente en los datos de ejemplo por su número de operación.
+   * Busca un crédito existente en la base de datos por su número de operación.
    */
-  const handleSearchCredit = () => {
-    setSearchError(null); // Limpiamos cualquier error previo.
-    setNewMonthlyPayment(null); // Limpiamos cualquier cálculo de arreglo previo.
-    // $$$ CONECTOR MYSQL: En el futuro, esta búsqueda se hará directamente a la base de datos de créditos.
-    // Buscamos el crédito ignorando mayúsculas/minúsculas.
-    const credit = credits.find(c => c.operationNumber.toLowerCase() === operationNumber.toLowerCase());
-    if (credit) {
-      setFoundCredit(credit); // Si lo encontramos, lo guardamos en el estado.
-    } else {
-      setFoundCredit(null); // Si no, reseteamos el crédito encontrado.
-      setSearchError(`No se encontró ningún crédito con el número de operación "${operationNumber}".`); // Y mostramos un error.
+  const handleSearchCredit = async () => {
+    if (!operationNumber.trim()) {
+      toast({
+        title: "Error",
+        description: "Por favor ingresa un número de operación.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSearchError(null);
+    setNewMonthlyPayment(null);
+    setFoundCredit(null);
+    setSearchingCredit(true);
+
+    try {
+      // Llamamos a la API para obtener todos los créditos
+      const response = await api.get('/api/credits');
+      const creditsList = Array.isArray(response.data) ? response.data : response.data.data || [];
+
+      // Buscamos el crédito por número de operación (ignorando mayúsculas/minúsculas)
+      const credit = creditsList.find((c: Credit) =>
+        c.numero_operacion?.toLowerCase() === operationNumber.toLowerCase()
+      );
+
+      if (credit) {
+        setFoundCredit(credit);
+        const debtorName = credit.lead?.name || 'Cliente sin nombre';
+        toast({
+          title: "Crédito encontrado",
+          description: `Crédito de ${debtorName} cargado correctamente.`,
+        });
+      } else {
+        setFoundCredit(null);
+        setSearchError(`No se encontró ningún crédito con el número de operación "${operationNumber}".`);
+        toast({
+          title: "No encontrado",
+          description: `No existe un crédito con el número "${operationNumber}".`,
+          variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error('Error searching credit:', error);
+      setFoundCredit(null);
+      setSearchError('Error al buscar el crédito. Por favor intenta de nuevo.');
+      toast({
+        title: "Error de conexión",
+        description: error?.response?.data?.message || "No se pudo conectar con el servidor.",
+        variant: "destructive",
+      });
+    } finally {
+      setSearchingCredit(false);
     }
   };
 
@@ -152,11 +193,11 @@ export default function CalculosPage() {
    * Calcula la nueva cuota para un arreglo de pago sobre un crédito existente.
    */
   const handleCalculateSettlement = () => {
-      if (!foundCredit) return; // Si no hay un crédito cargado, no hacemos nada.
+      if (!foundCredit) return;
 
       // Tomamos los datos del crédito encontrado y el nuevo plazo.
-      const principal = foundCredit.balance;
-      const annualInterestRate = foundCredit.rate / 100;
+      const principal = foundCredit.saldo || 0;
+      const annualInterestRate = (foundCredit.tasa_anual || 0) / 100;
       const numberOfMonths = parseInt(newTerm, 10);
 
       // Validamos los datos.
@@ -164,13 +205,13 @@ export default function CalculosPage() {
         setNewMonthlyPayment(null);
         return;
       }
-      
+
       // Aplicamos la misma fórmula de cálculo de cuota.
       const monthlyInterestRate = annualInterestRate / 12;
       const power = Math.pow(1 + monthlyInterestRate, numberOfMonths);
       const payment = principal * ((monthlyInterestRate * power) / (power - 1));
-      
-      setNewMonthlyPayment(payment); // Guardamos el resultado.
+
+      setNewMonthlyPayment(payment);
   };
 
   /**
@@ -186,12 +227,7 @@ export default function CalculosPage() {
     
     // Muestra una notificación de éxito.
     toast({
-      title: (
-        <div className="flex items-center gap-2">
-          <CheckCircle className="h-5 w-5 text-green-500" />
-          <span className="font-semibold">Cotización Enviada</span>
-        </div>
-      ),
+      title: "Cotización Enviada",
       description: `La cotización ha sido enviada a ${lead.name} por ${method === 'email' ? 'correo electrónico' : 'el sistema de comunicaciones'}.`,
       duration: 4000,
     });
@@ -366,11 +402,26 @@ export default function CalculosPage() {
                 value={operationNumber}
                 onChange={(e) => setOperationNumber(e.target.value)}
                 placeholder="Ej: CR-002"
+                disabled={searchingCredit}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !searchingCredit) {
+                    handleSearchCredit();
+                  }
+                }}
                 />
             </div>
-            <Button onClick={handleSearchCredit}>
-                <Search className="mr-2 h-4 w-4" />
-                Buscar
+            <Button onClick={handleSearchCredit} disabled={searchingCredit}>
+                {searchingCredit ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Buscando...
+                  </>
+                ) : (
+                  <>
+                    <Search className="mr-2 h-4 w-4" />
+                    Buscar
+                  </>
+                )}
             </Button>
           </div>
 
@@ -386,17 +437,17 @@ export default function CalculosPage() {
           {foundCredit && (
               <div className="space-y-4 rounded-lg border bg-muted/50 p-4">
                   <div>
-                      <h4 className="font-semibold">{foundCredit.debtorName}</h4>
-                      <p className="text-sm text-muted-foreground">{foundCredit.operationNumber}</p>
+                      <h4 className="font-semibold">{foundCredit.lead?.name || 'Cliente sin nombre'}</h4>
+                      <p className="text-sm text-muted-foreground">{foundCredit.numero_operacion}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>
                           <p className="text-muted-foreground">Saldo Actual</p>
-                          <p className="font-medium">₡{foundCredit.balance.toLocaleString('de-DE')}</p>
+                          <p className="font-medium">₡{(foundCredit.saldo || 0).toLocaleString('de-DE')}</p>
                       </div>
                        <div>
                           <p className="text-muted-foreground">Tasa de Interés</p>
-                          <p className="font-medium">{foundCredit.rate}%</p>
+                          <p className="font-medium">{foundCredit.tasa_anual}%</p>
                       </div>
                   </div>
                   <div className="space-y-2">
