@@ -51,9 +51,15 @@ interface CreateOpportunityDialogProps {
 
 const createOpportunitySchema = z.object({
   leadId: z.string().min(1, "Debes seleccionar un lead"),
-  vertical: z.string(),
-  opportunityType: z.string(),
-  status: z.string(),
+  vertical: z.enum(VERTICAL_OPTIONS, {
+    errorMap: () => ({ message: "Vertical no válida" })
+  }),
+  opportunityType: z.enum(OPPORTUNITY_TYPES, {
+    errorMap: () => ({ message: "Tipo de oportunidad no válido" })
+  }),
+  status: z.enum(OPPORTUNITY_STATUSES, {
+    errorMap: () => ({ message: "Estado no válido" })
+  }),
   amount: z.coerce.number().min(0, "El monto debe ser positivo"),
   expectedCloseDate: z.string().optional().refine((date) => {
     if (!date) return true;
@@ -61,7 +67,7 @@ const createOpportunitySchema = z.object({
     today.setHours(0, 0, 0, 0);
     return new Date(date) >= today;
   }, { message: "La fecha no puede ser anterior a hoy" }),
-  comments: z.string().optional(),
+  comments: z.string().max(1000, "Máximo 1000 caracteres").optional(),
 });
 
 type CreateOpportunityFormValues = z.infer<typeof createOpportunitySchema>;
