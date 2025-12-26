@@ -39,6 +39,9 @@ import {
   RefreshCw,
   AlertCircle,
   LineChart as LineChartIcon,
+  Download,
+  FileSpreadsheet,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/axios";
@@ -54,6 +57,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { exportToExcel, exportToPDF } from "@/lib/kpi-export";
 
 // ============ TYPES ============
 interface KPIData {
@@ -644,6 +648,40 @@ export default function KPIsPage() {
     return date.toLocaleTimeString('es-CR', { hour: '2-digit', minute: '2-digit' });
   };
 
+  const getPeriodLabel = (p: string) => {
+    const labels: Record<string, string> = {
+      week: 'Última semana',
+      month: 'Último mes',
+      quarter: 'Último trimestre',
+      year: 'Último año',
+    };
+    return labels[p] || p;
+  };
+
+  const handleExportExcel = () => {
+    exportToExcel({
+      leads: leadKPIs,
+      opportunities: opportunityKPIs,
+      credits: creditKPIs,
+      collections: collectionKPIs,
+      agents: agentKPIs,
+      gamification: gamificationKPIs,
+      business: businessHealthKPIs,
+    }, getPeriodLabel(period));
+  };
+
+  const handleExportPDF = () => {
+    exportToPDF({
+      leads: leadKPIs,
+      opportunities: opportunityKPIs,
+      credits: creditKPIs,
+      collections: collectionKPIs,
+      agents: agentKPIs,
+      gamification: gamificationKPIs,
+      business: businessHealthKPIs,
+    }, getPeriodLabel(period));
+  };
+
   // Error state
   if (error && !isLoading) {
     return (
@@ -701,6 +739,28 @@ export default function KPIsPage() {
           <Button variant="outline" size="icon" onClick={fetchKPIs} disabled={isLoading}>
             <RefreshCw className={cn("h-4 w-4", isLoading && "animate-spin")} />
           </Button>
+          <div className="flex items-center border rounded-md">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleExportExcel}
+              disabled={isLoading}
+              className="rounded-r-none border-r"
+            >
+              <FileSpreadsheet className="h-4 w-4 mr-1" />
+              Excel
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleExportPDF}
+              disabled={isLoading}
+              className="rounded-l-none"
+            >
+              <FileText className="h-4 w-4 mr-1" />
+              PDF
+            </Button>
+          </div>
           {lastUpdated && (
             <Badge variant="outline" className="text-sm">
               <Activity className="h-3 w-3 mr-1" />
