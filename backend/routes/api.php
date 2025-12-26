@@ -98,6 +98,7 @@ Route::prefix('kpis')->group(function () {
     Route::get('/agents', [\App\Http\Controllers\Api\KpiController::class, 'agents']);
     Route::get('/gamification', [\App\Http\Controllers\Api\KpiController::class, 'gamification']);
     Route::get('/business', [\App\Http\Controllers\Api\KpiController::class, 'business']);
+    Route::get('/trends', [\App\Http\Controllers\Api\KpiController::class, 'trends']);
 });
 
 // Enterprises CRUD

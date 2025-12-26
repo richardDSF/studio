@@ -38,9 +38,22 @@ import {
   Flame,
   RefreshCw,
   AlertCircle,
+  LineChart as LineChartIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import api from "@/lib/axios";
+import {
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from "recharts";
 
 // ============ TYPES ============
 interface KPIData {
@@ -112,6 +125,21 @@ interface BusinessHealthKPIs {
   clv: KPIData;
   cac: KPIData;
   portfolioGrowth: KPIData;
+}
+
+interface TrendDataPoint {
+  month: string;
+  fullMonth?: string;
+  value: number;
+}
+
+interface TrendData {
+  conversionRate: TrendDataPoint[];
+  disbursementVolume: TrendDataPoint[];
+  collectionRate: TrendDataPoint[];
+  portfolioGrowth: TrendDataPoint[];
+  delinquencyRate: TrendDataPoint[];
+  leadsCount: TrendDataPoint[];
 }
 
 interface AllKPIs {
@@ -408,6 +436,137 @@ function LevelDistributionChart({
   );
 }
 
+function TrendChart({
+  title,
+  description,
+  data,
+  dataKey,
+  color,
+  formatValue,
+  isLoading,
+  type = "line",
+  unit = "",
+}: {
+  title: string;
+  description?: string;
+  data: TrendDataPoint[];
+  dataKey: string;
+  color: string;
+  formatValue?: (value: number) => string;
+  isLoading?: boolean;
+  type?: "line" | "area";
+  unit?: string;
+}) {
+  if (isLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-48" />
+          <Skeleton className="h-4 w-64 mt-1" />
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-64 w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const defaultFormat = (value: number) => `${value}${unit}`;
+  const formatter = formatValue || defaultFormat;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <LineChartIcon className="h-5 w-5" />
+          {title}
+        </CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
+      </CardHeader>
+      <CardContent>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            {type === "area" ? (
+              <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id={`gradient-${dataKey}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={color} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={color} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis
+                  dataKey="month"
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tickFormatter={formatter}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                  }}
+                  formatter={(value: number) => [formatter(value), title]}
+                  labelFormatter={(label) => {
+                    const point = data.find(d => d.month === label);
+                    return point?.fullMonth || label;
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke={color}
+                  strokeWidth={2}
+                  fill={`url(#gradient-${dataKey})`}
+                />
+              </AreaChart>
+            ) : (
+              <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                <XAxis
+                  dataKey="month"
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                />
+                <YAxis
+                  className="text-xs"
+                  tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                  tickFormatter={formatter}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'hsl(var(--card))',
+                    border: '1px solid hsl(var(--border))',
+                    borderRadius: '8px',
+                  }}
+                  formatter={(value: number) => [formatter(value), title]}
+                  labelFormatter={(label) => {
+                    const point = data.find(d => d.month === label);
+                    return point?.fullMonth || label;
+                  }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="value"
+                  stroke={color}
+                  strokeWidth={2}
+                  dot={{ fill: color, strokeWidth: 2, r: 4 }}
+                  activeDot={{ r: 6, fill: color }}
+                />
+              </LineChart>
+            )}
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 // ============ MAIN PAGE ============
 export default function KPIsPage() {
   const [activeTab, setActiveTab] = useState("leads");
@@ -424,6 +583,8 @@ export default function KPIsPage() {
   const [agentKPIs, setAgentKPIs] = useState<AgentKPIs | null>(null);
   const [gamificationKPIs, setGamificationKPIs] = useState<GamificationKPIs | null>(null);
   const [businessHealthKPIs, setBusinessHealthKPIs] = useState<BusinessHealthKPIs | null>(null);
+  const [trendData, setTrendData] = useState<TrendData | null>(null);
+  const [trendsLoading, setTrendsLoading] = useState(true);
 
   const fetchKPIs = useCallback(async () => {
     setIsLoading(true);
@@ -449,9 +610,22 @@ export default function KPIsPage() {
     }
   }, [period]);
 
+  const fetchTrends = useCallback(async () => {
+    setTrendsLoading(true);
+    try {
+      const response = await api.get('/api/kpis/trends?months=6');
+      setTrendData(response.data as TrendData);
+    } catch (err) {
+      console.error('Error fetching trends:', err);
+    } finally {
+      setTrendsLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchKPIs();
-  }, [fetchKPIs]);
+    fetchTrends();
+  }, [fetchKPIs, fetchTrends]);
 
   const formatCurrency = (value: number) => {
     if (value >= 1000000000) {
@@ -538,7 +712,7 @@ export default function KPIsPage() {
 
       {/* Tabs Navigation */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
+        <TabsList className="grid w-full grid-cols-8 lg:w-auto lg:inline-grid">
           <TabsTrigger value="leads" className="gap-1">
             <Users className="h-4 w-4" />
             <span className="hidden sm:inline">Leads</span>
@@ -566,6 +740,10 @@ export default function KPIsPage() {
           <TabsTrigger value="business" className="gap-1">
             <Building2 className="h-4 w-4" />
             <span className="hidden sm:inline">Negocio</span>
+          </TabsTrigger>
+          <TabsTrigger value="trends" className="gap-1">
+            <LineChartIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Tendencias</span>
           </TabsTrigger>
         </TabsList>
 
@@ -984,6 +1162,68 @@ export default function KPIsPage() {
               </CardContent>
             </Card>
           )}
+        </TabsContent>
+
+        {/* Trends */}
+        <TabsContent value="trends" className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <TrendChart
+              title="Tasa de Conversión"
+              description="Evolución de la tasa de conversión de leads a clientes"
+              data={trendData?.conversionRate ?? []}
+              dataKey="conversionRate"
+              color="#22c55e"
+              unit="%"
+              isLoading={trendsLoading}
+            />
+            <TrendChart
+              title="Volumen de Desembolso"
+              description="Monto total desembolsado por mes"
+              data={trendData?.disbursementVolume ?? []}
+              dataKey="disbursementVolume"
+              color="#3b82f6"
+              type="area"
+              formatValue={(v) => `₡${(v / 1000000).toFixed(1)}M`}
+              isLoading={trendsLoading}
+            />
+            <TrendChart
+              title="Tasa de Cobro"
+              description="Porcentaje de pagos recibidos vs esperados"
+              data={trendData?.collectionRate ?? []}
+              dataKey="collectionRate"
+              color="#8b5cf6"
+              unit="%"
+              isLoading={trendsLoading}
+            />
+            <TrendChart
+              title="Crecimiento de Cartera"
+              description="Valor total del portafolio activo"
+              data={trendData?.portfolioGrowth ?? []}
+              dataKey="portfolioGrowth"
+              color="#10b981"
+              type="area"
+              formatValue={(v) => `₡${(v / 1000000).toFixed(0)}M`}
+              isLoading={trendsLoading}
+            />
+            <TrendChart
+              title="Tasa de Morosidad"
+              description="Porcentaje de cuentas en mora"
+              data={trendData?.delinquencyRate ?? []}
+              dataKey="delinquencyRate"
+              color="#ef4444"
+              unit="%"
+              isLoading={trendsLoading}
+            />
+            <TrendChart
+              title="Nuevos Leads"
+              description="Cantidad de leads captados por mes"
+              data={trendData?.leadsCount ?? []}
+              dataKey="leadsCount"
+              color="#f59e0b"
+              type="area"
+              isLoading={trendsLoading}
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>
