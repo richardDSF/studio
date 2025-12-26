@@ -1465,26 +1465,54 @@ interface CreditDocumentsDialogProps {
   deductoras: DeductoraOption[];
 }
 
-function CreditDocumentsDialog({ isOpen, credit, onClose, canDownloadDocuments, deductoras }: CreditDocumentsDialogProps) {
+function CreditDocumentsDialog({ isOpen, credit, onClose, canDownloadDocuments }: CreditDocumentsDialogProps) {
   const { toast } = useToast();
   const [documents, setDocuments] = useState<CreditDocument[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Create state
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [notes, setNotes] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
+  // Edit state
+  const [editingDoc, setEditingDoc] = useState<CreditDocument | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editNotes, setEditNotes] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Delete state
+  const [deletingDocId, setDeletingDocId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const fetchDocuments = useCallback(async () => {
     if (!credit) return;
+    setIsLoading(true);
     try {
       const res = await api.get(`/api/credits/${credit.id}/documents`);
       setDocuments(res.data);
-    } catch (e) { console.error(e); }
-  }, [credit]);
+    } catch (e) {
+      console.error(e);
+      toast({ title: "Error", description: "No se pudieron cargar los documentos.", variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [credit, toast]);
 
   useEffect(() => {
-    if (isOpen) fetchDocuments();
+    if (isOpen) {
+      fetchDocuments();
+      // Reset form state
+      setFile(null);
+      setName("");
+      setNotes("");
+      setEditingDoc(null);
+      setDeletingDocId(null);
+    }
   }, [isOpen, fetchDocuments]);
 
+  // CREATE - Upload new document
   const handleUpload = async (e: FormEvent) => {
     e.preventDefault();
     if (!credit || !file) return;
@@ -1492,84 +1520,306 @@ function CreditDocumentsDialog({ isOpen, credit, onClose, canDownloadDocuments, 
     try {
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("name", name);
+      formData.append("name", name || file.name);
       formData.append("notes", notes);
 
       await api.post(`/api/credits/${credit.id}/documents`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
 
-      toast({ title: "Documento subido" });
-      setName(""); setNotes(""); setFile(null);
+      toast({ title: "Documento subido", description: "El documento se ha subido correctamente." });
+      setName("");
+      setNotes("");
+      setFile(null);
+      // Reset file input
+      const fileInput = document.getElementById('doc-file-input') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
       fetchDocuments();
-    } catch (e) {
-      toast({ title: "Error", variant: "destructive" });
+    } catch (e: any) {
+      toast({ title: "Error", description: e.response?.data?.message || "No se pudo subir el documento.", variant: "destructive" });
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleDelete = async (docId: number) => {
-    if (!credit) return;
+  // READ - Download document
+  const handleDownload = async (doc: CreditDocument) => {
+    if (!credit || !canDownloadDocuments) return;
     try {
-      await api.delete(`/api/credits/${credit.id}/documents/${docId}`);
+      const response = await api.get(`/api/credits/${credit.id}/documents/${doc.id}/download`, {
+        responseType: 'blob'
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', doc.name || `documento-${doc.id}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e: any) {
+      toast({ title: "Error", description: "No se pudo descargar el documento.", variant: "destructive" });
+    }
+  };
+
+  // UPDATE - Edit document
+  const handleStartEdit = (doc: CreditDocument) => {
+    setEditingDoc(doc);
+    setEditName(doc.name);
+    setEditNotes(doc.notes || "");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingDoc(null);
+    setEditName("");
+    setEditNotes("");
+  };
+
+  const handleUpdate = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!credit || !editingDoc) return;
+    setIsUpdating(true);
+    try {
+      await api.put(`/api/credits/${credit.id}/documents/${editingDoc.id}`, {
+        name: editName,
+        notes: editNotes
+      });
+
+      toast({ title: "Documento actualizado", description: "Los cambios se han guardado correctamente." });
+      handleCancelEdit();
       fetchDocuments();
-    } catch (e) { console.error(e); }
+    } catch (e: any) {
+      toast({ title: "Error", description: e.response?.data?.message || "No se pudo actualizar el documento.", variant: "destructive" });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // DELETE - Remove document
+  const handleConfirmDelete = async () => {
+    if (!credit || !deletingDocId) return;
+    setIsDeleting(true);
+    try {
+      await api.delete(`/api/credits/${credit.id}/documents/${deletingDocId}`);
+      toast({ title: "Documento eliminado", description: "El documento se ha eliminado correctamente." });
+      setDeletingDocId(null);
+      fetchDocuments();
+    } catch (e: any) {
+      toast({ title: "Error", description: e.response?.data?.message || "No se pudo eliminar el documento.", variant: "destructive" });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const formatFileSize = (bytes?: number | null) => {
+    if (!bytes) return "-";
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader><DialogTitle>Documentos</DialogTitle></DialogHeader>
-        <div className="space-y-4">
-          <form onSubmit={handleUpload} className="space-y-4 border p-4 rounded">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Nombre</Label>
-                <Input value={name} onChange={e => setName(e.target.value)} required />
+    <>
+      <Dialog open={isOpen} onOpenChange={open => !open && onClose()}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Gestionar Documentos</DialogTitle>
+            <DialogDescription>
+              {credit ? `Documentos del crédito ${credit.reference || credit.numero_operacion || credit.id}` : "Documentos del crédito"}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto space-y-6">
+            {/* Upload Form */}
+            <form onSubmit={handleUpload} className="space-y-4 border p-4 rounded-lg bg-muted/30">
+              <h4 className="font-medium text-sm">Subir nuevo documento</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="doc-name">Nombre del documento</Label>
+                  <Input
+                    id="doc-name"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="Ej: Contrato firmado"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="doc-file-input">Archivo</Label>
+                  <Input
+                    id="doc-file-input"
+                    type="file"
+                    onChange={e => setFile(e.target.files?.[0] || null)}
+                    required
+                  />
+                </div>
+                <div className="sm:col-span-2 space-y-2">
+                  <Label htmlFor="doc-notes">Notas (opcional)</Label>
+                  <Input
+                    id="doc-notes"
+                    value={notes}
+                    onChange={e => setNotes(e.target.value)}
+                    placeholder="Observaciones sobre el documento..."
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Archivo</Label>
-                <Input type="file" onChange={e => setFile(e.target.files?.[0] || null)} required />
-              </div>
-              <div className="col-span-2 space-y-2">
-                <Label>Notas</Label>
-                <Input value={notes} onChange={e => setNotes(e.target.value)} />
-              </div>
+              <Button type="submit" disabled={isUploading || !file} size="sm">
+                {isUploading ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Subiendo...
+                  </>
+                ) : (
+                  <>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Subir Documento
+                  </>
+                )}
+              </Button>
+            </form>
+
+            {/* Documents List */}
+            <div className="space-y-2">
+              <h4 className="font-medium text-sm">Documentos ({documents.length})</h4>
+              {isLoading ? (
+                <div className="flex justify-center py-8">
+                  <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+                </div>
+              ) : documents.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No hay documentos adjuntos a este crédito.
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nombre</TableHead>
+                      <TableHead>Notas</TableHead>
+                      <TableHead>Tamaño</TableHead>
+                      <TableHead>Fecha</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {documents.map(doc => (
+                      <TableRow key={doc.id}>
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            {doc.name}
+                          </div>
+                        </TableCell>
+                        <TableCell className="max-w-[200px] truncate text-muted-foreground">
+                          {doc.notes || "-"}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {formatFileSize(doc.size)}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {formatDate(doc.created_at)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            {canDownloadDocuments && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleDownload(doc)}
+                                title="Descargar"
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            )}
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleStartEdit(doc)}
+                              title="Editar"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setDeletingDocId(doc.id)}
+                              className="text-destructive hover:text-destructive"
+                              title="Eliminar"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                              </svg>
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </div>
-            <Button type="submit" disabled={isUploading}>{isUploading ? "Subiendo..." : "Subir Documento"}</Button>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={onClose}>Cerrar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={!!editingDoc} onOpenChange={open => !open && handleCancelEdit()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Documento</DialogTitle>
+            <DialogDescription>Modifica los datos del documento.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleUpdate} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Nombre</Label>
+              <Input
+                id="edit-name"
+                value={editName}
+                onChange={e => setEditName(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-notes">Notas</Label>
+              <Textarea
+                id="edit-notes"
+                value={editNotes}
+                onChange={e => setEditNotes(e.target.value)}
+                placeholder="Observaciones sobre el documento..."
+                rows={3}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={handleCancelEdit}>Cancelar</Button>
+              <Button type="submit" disabled={isUpdating}>
+                {isUpdating ? "Guardando..." : "Guardar cambios"}
+              </Button>
+            </DialogFooter>
           </form>
+        </DialogContent>
+      </Dialog>
 
-          <Table>
-            <TableHeader>
-              <TableRow><TableHead>Nombre</TableHead><TableHead>Notas</TableHead><TableHead>Acciones</TableHead></TableRow>
-            </TableHeader>
-            <TableBody>
-              {documents.map(doc => (
-                <TableRow key={doc.id}>
-                  <TableCell>
-                    {(() => {
-                      // 1. AGREGA ESTA LÍNEA: Si credit es null, retorna guion y no ejecutes lo demás
-                      if (!credit) return "-";
-
-                      // 2. Ahora TypeScript sabe que credit existe, pero mantén los '?' por seguridad en lead/client
-                      const dedId = credit.lead?.deductora_id || credit.client?.deductora_id || credit.deductora_id;
-
-                      if (!dedId) return "-";
-
-                      const found = deductoras.find(d => String(d.id) === String(dedId));
-                      return found ? found.nombre : dedId;
-                    })()}
-                  </TableCell>
-                  <Button variant="ghost" size="sm" onClick={() => handleDelete(doc.id)} className="text-destructive">Eliminar</Button>
-
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </DialogContent>
-    </Dialog>
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deletingDocId} onOpenChange={open => !open && setDeletingDocId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar Documento</DialogTitle>
+            <DialogDescription>
+              ¿Estás seguro de que deseas eliminar este documento? Esta acción no se puede deshacer.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeletingDocId(null)}>Cancelar</Button>
+            <Button variant="destructive" onClick={handleConfirmDelete} disabled={isDeleting}>
+              {isDeleting ? "Eliminando..." : "Eliminar"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
